@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: ${AWS_RDS_URL}
+    username: ${AWS_RDS_USER_ID}
+    password: ${AWS_RDS_USER_PW}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+      dialect: org.hibernate.dialect.MySQLDialect
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true

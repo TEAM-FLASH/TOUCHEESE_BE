@@ -61,8 +61,8 @@ public interface StudioRepository extends JpaRepository<Studio, Long> {
     //옵션에 따라 스튜디오 필터링
 //    List<Studio> findByOptionsExists(List<String> options);
 
-
-
+    //검색어가 상호명에 포함된 스튜디오 찾기
+    List<Studio> findByNameContaining(String str);
 
 
 

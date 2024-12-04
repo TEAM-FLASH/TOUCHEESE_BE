@@ -118,6 +118,24 @@ public class StudioService {
 
     }
 
+    //검색한 스튜디오
+    public Page<StudioDto> getStudiosWithSearch(String str, Pageable pageable){
+
+        //검색어가 포함되어 있는 스튜디오
+        List<Studio> studios = studioRepository.findByNameContaining(str);
+
+        //DTO로 반환
+        List<StudioDto> studioDtos = studios.stream()
+                .map(StudioDto::fromEntity)
+                .collect(Collectors.toList());
+
+        //페이징
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), studioDtos.size());
+
+        return new PageImpl<>(studioDtos.subList(start, end), pageable, studioDtos.size());
+    }
+
     //정렬에 관련
     //ENUM
     public enum SortBy {

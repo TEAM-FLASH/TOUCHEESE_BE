@@ -47,4 +47,11 @@ public class StudioController {
         return studioService.getStudiosWithFilter(requestedDateTime, duration, vibeName, addressGu, pageable, sortBy, minPrice, maxPrice);
     }
 
+    @GetMapping("/search")
+    public Page<StudioDto> getStudiosWithSearch(
+            @RequestParam(required = false) String str,
+            Pageable pageable
+    ){
+        return studioService.getStudiosWithSearch(str, pageable);
+    }
 }

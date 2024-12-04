@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/studio")
@@ -51,10 +52,17 @@ public class StudioController {
     }
 
     @GetMapping("/search")
-    public Page<StudioDto> getStudiosWithSearch(
-            @RequestParam(required = false) String str,
+    public Set<String> getStudiosWithSearch(@RequestParam(defaultValue = "10") int topN){
+        //Redis를 이용하여 실시간 검색어 노출
+        return studioService.getTopKeyword(topN);
+    }
+
+    @GetMapping("/search/result")
+    public Page<StudioDto> getStudiosWithSearchResult(
+            @RequestParam(required = false) String keyword,
             Pageable pageable
     ){
-        return studioService.getStudiosWithSearch(str, pageable);
+        studioService.saveKeyword(keyword);
+        return studioService.getStudiosWithSearch(keyword, pageable);
     }
 }

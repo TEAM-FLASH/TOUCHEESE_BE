@@ -7,6 +7,8 @@ import com.team4.toucheese.studio.repository.StudioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -15,6 +17,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,6 +25,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class StudioService {
     private final StudioRepository studioRepository;
+    private final String SEARCH_KEY = "real_time_keyword";
+    private final String TIMESTAMP_KEY = "keyword_timestamp";
+    private final long EXPIRE_TIME = 60 * 60;   //1시간 (60초 * 60)
+    private final RedisTemplate<String, String> redisTemplate;
 
     //모든 스튜디오 정보 가져와서 페이징
     public Page<StudioDto> getAllStudios(int page, int size, SortBy sortby){
@@ -186,10 +193,10 @@ public class StudioService {
     }
 
     //검색한 스튜디오
-    public Page<StudioDto> getStudiosWithSearch(String str, Pageable pageable){
+    public Page<StudioDto> getStudiosWithSearch(String keyword, Pageable pageable){
 
         //검색어가 포함되어 있는 스튜디오
-        List<Studio> studios = studioRepository.findByNameContaining(str);
+        List<Studio> studios = studioRepository.findByNameContaining(keyword);
 
         //DTO로 반환
         List<StudioDto> studioDtos = studios.stream()
@@ -239,4 +246,48 @@ public class StudioService {
         }
         return studios;
     }
+
+    //Redis 검색어 저장
+    public void saveKeyword(String keyword){
+        ZSetOperations<String, String> zSetOps = redisTemplate.opsForZSet();
+        long currentTime = System.currentTimeMillis() / 1000;   //현재시간 (초)
+
+        //검색 횟수 증가
+        zSetOps.incrementScore(SEARCH_KEY, keyword, 1);
+
+        //검색어의 최신 타임스탬프 저장
+        redisTemplate.opsForHash().put(TIMESTAMP_KEY, keyword, String.valueOf(currentTime));
+
+    }
+
+    //실시간 검색어
+    public Set<String> getTopKeyword(int topN){
+        //오래된 검색어 제거
+        clearOldKeyword();
+
+        ZSetOperations<String, String> zSetOps = redisTemplate.opsForZSet();
+        return zSetOps.reverseRange(SEARCH_KEY, 0, topN - 1);   //검색 횟수 기준 상위 N개 반환
+    }
+
+    //오래된 검색어 정리
+    public void clearOldKeyword(){
+        ZSetOperations<String, String> zSetOps = redisTemplate.opsForZSet();
+        long currentTime = System.currentTimeMillis() / 1000;
+
+        Set<String> keywords = zSetOps.range(SEARCH_KEY, 0, -1);    //모든 검색어
+        if (keywords != null) {
+            for (String keyword : keywords) {
+                String timestampStr = (String) redisTemplate.opsForHash().get(TIMESTAMP_KEY, keyword);
+                if (timestampStr != null){
+                    long timestamp = Long.parseLong(timestampStr);
+                    if (currentTime - timestamp > EXPIRE_TIME){
+                        zSetOps.remove(SEARCH_KEY, keyword);
+                    }
+                }
+            }
+        }
+    }
+
+
+
 }

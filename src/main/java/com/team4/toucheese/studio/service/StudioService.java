@@ -56,7 +56,9 @@ public class StudioService {
             String vibeName,
             String addressGu,
             Pageable pageable,
-            SortBy sortBy
+            SortBy sortBy,
+            int minPrice,
+            int maxPrice
     ) {
         // 스튜디오 담을 리스트
         List<Studio> studios;
@@ -89,6 +91,15 @@ public class StudioService {
                     .filter(studio -> studioRepository.findByAddressGu_Name(addressGu).contains(studio))
                     .collect(Collectors.toList());
         }
+
+        // 가격 필터링
+        if (minPrice != -1 && maxPrice != -1){
+            studios = studios.stream()
+                    .filter(studio -> studioRepository.findByPrice(minPrice, maxPrice).contains(studio))
+                    .collect(Collectors.toList());
+        }
+        // 옵션 필터링
+
 
         //정렬 적용
         List<StudioDto> studioDtos = studios.stream()

@@ -51,8 +51,15 @@ public interface StudioRepository extends JpaRepository<Studio, Long> {
     //지역에 따라 스튜디오 필터링
     List<Studio> findByAddressGu_Name(String addressGu);
 
-    //옵션이 존재하는지
-//    List<Studio> findDistinctByOptionsNameIn(List<StudioOption.OptionName> optionNames);
+    //가격에 따라 스튜디오 필터링
+    @Query("SELECT s FROM Studio s " +
+            "LEFT JOIN s.menus m " +
+            "WHERE m.name = '프로필사진' AND m.price BETWEEN :minPrice AND :maxPrice")
+    List<Studio> findByPrice(@Param("minPrice") int minPrice,
+                             @Param("maxPrice") int maxPrice);
+
+    //옵션에 따라 스튜디오 필터링
+//    List<Studio> findByOptionsExists(List<String> options);
 
 
 

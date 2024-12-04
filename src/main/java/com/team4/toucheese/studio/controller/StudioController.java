@@ -36,12 +36,15 @@ public class StudioController {
             @RequestParam(required = false) String vibeName,
             @RequestParam(required = false) String addressGu,
             Pageable pageable,
-            @RequestParam(defaultValue = "POPULARITY") StudioService.SortBy sortBy
+            @RequestParam(defaultValue = "POPULARITY") StudioService.SortBy sortBy,
+            @RequestParam(defaultValue = "-1")int minPrice,
+            @RequestParam(defaultValue = "-1")int maxPrice
     ) {
         System.out.println("requestedDateTime = " + requestedDateTime);
         System.out.println("duration = " + duration);
         System.out.println("vibeName = " + vibeName);
         System.out.println("addressGu = " + addressGu);
-        return studioService.getStudiosWithFilter(requestedDateTime, duration, vibeName, addressGu, pageable, sortBy);
+        return studioService.getStudiosWithFilter(requestedDateTime, duration, vibeName, addressGu, pageable, sortBy, minPrice, maxPrice);
     }
+
 }

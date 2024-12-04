@@ -31,7 +31,8 @@ public class StudioController {
     @GetMapping("/filter")
     public Page<StudioDto> getStudiosWithFilter(
             @RequestParam(required = false) LocalDateTime requestedDateTime,
-            @RequestParam(required = false) LocalTime duration,
+            @RequestParam(defaultValue = "00:30:00") // 디폴트 30분
+            LocalTime duration,
             @RequestParam(required = false) String vibeName,
             @RequestParam(required = false) String addressGu,
             Pageable pageable,

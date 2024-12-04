@@ -2,6 +2,7 @@ package com.team4.toucheese.studio.service;
 
 import com.team4.toucheese.studio.dto.StudioDto;
 import com.team4.toucheese.studio.entity.Studio;
+import com.team4.toucheese.studio.entity.StudioOption;
 import com.team4.toucheese.studio.repository.StudioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +59,8 @@ public class StudioService {
             Pageable pageable,
             SortBy sortBy,
             int minPrice,
-            int maxPrice
+            int maxPrice,
+            List<String> options
     ) {
         // 스튜디오 담을 리스트
         List<Studio> studios;
@@ -99,6 +101,70 @@ public class StudioService {
                     .collect(Collectors.toList());
         }
         // 옵션 필터링
+        if (options != null) {
+            for (String option : options) {
+                if (option.equals("HAIR_MAKEUP")) {
+                    try{
+                        StudioOption.OptionName optionName = StudioOption.OptionName.valueOf(option);
+                        studios = studios.stream()
+                                .filter(studio -> studioRepository.findByOptionsExists(optionName).contains(studio))
+                                .collect(Collectors.toList());
+                    }catch (IllegalArgumentException e){
+                        System.err.println(e + option);
+                    }
+                }
+                if (option.equals("CHANGING_ROOM")) {
+                    try{
+                        StudioOption.OptionName optionName = StudioOption.OptionName.valueOf(option);
+                        studios = studios.stream()
+                                .filter(studio -> studioRepository.findByOptionsExists(optionName).contains(studio))
+                                .collect(Collectors.toList());
+                    }catch (IllegalArgumentException e){
+                        System.err.println(e + option);
+                    }
+                }
+                if (option.equals("DRESSING_ROOM")) {
+                    try{
+                        StudioOption.OptionName optionName = StudioOption.OptionName.valueOf(option);
+                        studios = studios.stream()
+                                .filter(studio -> studioRepository.findByOptionsExists(optionName).contains(studio))
+                                .collect(Collectors.toList());
+                    }catch (IllegalArgumentException e){
+                        System.err.println(e + option);
+                    }
+                }
+                if (option.equals("SUIT_RENTAL_FREE")) {
+                    try{
+                        StudioOption.OptionName optionName = StudioOption.OptionName.valueOf(option);
+                        studios = studios.stream()
+                                .filter(studio -> studioRepository.findByOptionsExists(optionName).contains(studio))
+                                .collect(Collectors.toList());
+                    }catch (IllegalArgumentException e){
+                        System.err.println(e + option);
+                    }
+                }
+                if (option.equals("ORIGINAL_FILES")) {
+                    try{
+                        StudioOption.OptionName optionName = StudioOption.OptionName.valueOf(option);
+                        studios = studios.stream()
+                                .filter(studio -> studioRepository.findByOptionsExists(optionName).contains(studio))
+                                .collect(Collectors.toList());
+                    }catch (IllegalArgumentException e){
+                        System.err.println(e + option);
+                    }
+                }
+                if (option.equals("INDIVIDUAL_EDITING")) {
+                    try{
+                        StudioOption.OptionName optionName = StudioOption.OptionName.valueOf(option);
+                        studios = studios.stream()
+                                .filter(studio -> studioRepository.findByOptionsExists(optionName).contains(studio))
+                                .collect(Collectors.toList());
+                    }catch (IllegalArgumentException e){
+                        System.err.println(e + option);
+                    }
+                }
+            }
+        }
 
 
         //정렬 적용
@@ -107,6 +173,7 @@ public class StudioService {
                 .collect(Collectors.toList());
 
         studioDtos = sortStudios(studioDtos, sortBy);
+
 
         //페이징 적용
 

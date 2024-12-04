@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/studio")
@@ -38,13 +39,15 @@ public class StudioController {
             Pageable pageable,
             @RequestParam(defaultValue = "POPULARITY") StudioService.SortBy sortBy,
             @RequestParam(defaultValue = "-1")int minPrice,
-            @RequestParam(defaultValue = "-1")int maxPrice
+            @RequestParam(defaultValue = "-1")int maxPrice,
+            @RequestParam(required = false) List<String> options
     ) {
         System.out.println("requestedDateTime = " + requestedDateTime);
         System.out.println("duration = " + duration);
         System.out.println("vibeName = " + vibeName);
         System.out.println("addressGu = " + addressGu);
-        return studioService.getStudiosWithFilter(requestedDateTime, duration, vibeName, addressGu, pageable, sortBy, minPrice, maxPrice);
+        return studioService.getStudiosWithFilter(requestedDateTime, duration, vibeName,
+                addressGu, pageable, sortBy, minPrice, maxPrice,options);
     }
 
     @GetMapping("/search")

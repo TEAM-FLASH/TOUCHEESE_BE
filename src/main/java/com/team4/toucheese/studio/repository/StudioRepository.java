@@ -59,7 +59,10 @@ public interface StudioRepository extends JpaRepository<Studio, Long> {
                              @Param("maxPrice") int maxPrice);
 
     //옵션에 따라 스튜디오 필터링
-//    List<Studio> findByOptionsExists(List<String> options);
+    @Query("SELECT s FROM Studio s " +
+            "WHERE EXISTS (" +
+            "SELECT o FROM s.options o WHERE o.name = :option)")
+    List<Studio> findByOptionsExists(StudioOption.OptionName option);
 
     //검색어가 상호명에 포함된 스튜디오 찾기
     List<Studio> findByNameContaining(String str);

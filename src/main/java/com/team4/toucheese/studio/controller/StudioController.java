@@ -3,8 +3,11 @@ package com.team4.toucheese.studio.controller;
 import com.team4.toucheese.studio.dto.StudioDto;
 import com.team4.toucheese.studio.service.StudioService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,16 +25,24 @@ public class StudioController {
     private final StudioService studioService;
 
     @GetMapping("")
-    public Page<StudioDto> getAllStudios(
+    public ResponseEntity<Page<StudioDto>> getAllStudios(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "POPULARITY") StudioService.SortBy sortBy
     ){
-        return studioService.getAllStudios(page, size, sortBy);
+        try {
+            return ResponseEntity.ok(studioService.getAllStudios(page, size, sortBy));
+        }catch ( ConfigDataResourceNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }catch ( IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }catch ( Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/filter")
-    public Page<StudioDto> getStudiosWithFilter(
+    public ResponseEntity<Page<StudioDto>> getStudiosWithFilter(
             @RequestParam(required = false) LocalDateTime requestedDateTime,
             @RequestParam(defaultValue = "00:30:00") // 디폴트 30분
             LocalTime duration,
@@ -47,22 +58,48 @@ public class StudioController {
         System.out.println("duration = " + duration);
         System.out.println("vibeName = " + vibeName);
         System.out.println("addressGu = " + addressGu);
-        return studioService.getStudiosWithFilter(requestedDateTime, duration, vibeName,
-                addressGu, pageable, sortBy, minPrice, maxPrice,options);
+
+        try {
+            return ResponseEntity.ok(studioService.getStudiosWithFilter(requestedDateTime, duration, vibeName,
+                    addressGu, pageable, sortBy, minPrice, maxPrice,options));
+        }catch (ConfigDataResourceNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/search")
-    public Set<String> getStudiosWithSearch(@RequestParam(defaultValue = "10") int topN){
+    public ResponseEntity<Set<String>> getStudiosWithSearch(@RequestParam(defaultValue = "10") int topN){
         //Redis를 이용하여 실시간 검색어 노출
-        return studioService.getTopKeyword(topN);
+        try {
+            return ResponseEntity.ok(studioService.getTopKeyword(topN));
+        }catch (ConfigDataResourceNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/search/result")
-    public Page<StudioDto> getStudiosWithSearchResult(
+    public ResponseEntity<Page<StudioDto>> getStudiosWithSearchResult(
             @RequestParam(required = false) String keyword,
             Pageable pageable
     ){
-        studioService.saveKeyword(keyword);
-        return studioService.getStudiosWithSearch(keyword, pageable);
+        try {
+            //검색어 저장
+            studioService.saveKeyword(keyword);
+            return ResponseEntity.ok(studioService.getStudiosWithSearch(keyword, pageable));
+        }catch (ConfigDataResourceNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

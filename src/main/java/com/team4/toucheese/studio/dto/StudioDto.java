@@ -41,6 +41,7 @@ public class StudioDto {
     private String subVibe;   //서브분위기
     private List<PortfolioDto> portfolios;
     private List<MenuDto> menus;
+    private List<StudioOptionDto> options;
 
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
@@ -68,6 +69,7 @@ public class StudioDto {
                 .subVibe(entity.getSubVibe().getName())
                 .portfolios(entity.getPortfolios().stream().map(PortfolioDto::fromEntity).toList())
                 .menus(entity.getMenus().stream().map(MenuDto::fromEntity).toList())
+                .options(entity.getOptions().stream().map(StudioOptionDto::fromEntity).toList())
                 .day_of_week(entity.getDay_of_week())
                 .created_at(entity.getCreated_at())
                 .updated_at(entity.getUpdated_at())

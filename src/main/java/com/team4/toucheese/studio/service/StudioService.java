@@ -27,7 +27,8 @@ public class StudioService {
     private final StudioRepository studioRepository;
     private final String SEARCH_KEY = "real_time_keyword";
     private final String TIMESTAMP_KEY = "keyword_timestamp";
-    private final long EXPIRE_TIME = 60 * 60;   //1시간 (60초 * 60)
+    private final long EXPIRE_TIME = 60;
+//            60 * 60;   //1시간 (60초 * 60)
     private final RedisTemplate<String, String> redisTemplate;
 
     //모든 스튜디오 정보 가져와서 페이징
@@ -269,6 +270,11 @@ public class StudioService {
         ZSetOperations<String, String> zSetOps = redisTemplate.opsForZSet();
         long currentTime = System.currentTimeMillis() / 1000;   //현재시간 (초)
 
+        //빈값, null 저장안함
+        if (keyword == null || keyword.isBlank()) return;
+        //스튜디오 검색결과가 없으면 저장 안함
+        if (studioRepository.findByNameContaining(keyword).isEmpty()) return;
+
         //검색 횟수 증가
         zSetOps.incrementScore(SEARCH_KEY, keyword, 1);
 
@@ -294,6 +300,12 @@ public class StudioService {
         Set<String> keywords = zSetOps.range(SEARCH_KEY, 0, -1);    //모든 검색어
         if (keywords != null) {
             for (String keyword : keywords) {
+                if (keyword == null){
+                    //null값이 있으면 삭제
+                    zSetOps.remove(SEARCH_KEY, keyword);
+                    redisTemplate.opsForHash().delete(TIMESTAMP_KEY, keyword);
+                    continue;
+                }
                 String timestampStr = (String) redisTemplate.opsForHash().get(TIMESTAMP_KEY, keyword);
                 if (timestampStr != null){
                     long timestamp = Long.parseLong(timestampStr);

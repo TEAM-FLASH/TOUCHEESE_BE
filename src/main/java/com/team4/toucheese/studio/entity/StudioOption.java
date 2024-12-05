@@ -37,6 +37,7 @@ public class StudioOption {
         DRESSING_ROOM,
         SUIT_RENTAL_FREE,
         ORIGINAL_FILES,
-        INDIVIDUAL_EDITING
+        INDIVIDUAL_EDITING,
+        PARKING_AREA
     }
 }

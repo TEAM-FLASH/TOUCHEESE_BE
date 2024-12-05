@@ -110,9 +110,10 @@ public class StudioService {
         // 옵션 필터링
         if (options != null) {
             for (String option : options) {
-                if (option.equals("HAIR_MAKEUP")) {
+                if (option.equals("헤메코")) {
                     try{
-                        StudioOption.OptionName optionName = StudioOption.OptionName.valueOf(option);
+                        String optionNameToEng = "HAIR_MAKEUP";
+                        StudioOption.OptionName optionName = StudioOption.OptionName.valueOf(optionNameToEng);
                         studios = studios.stream()
                                 .filter(studio -> studioRepository.findByOptionsExists(optionName).contains(studio))
                                 .collect(Collectors.toList());
@@ -120,9 +121,10 @@ public class StudioService {
                         System.err.println(e + option);
                     }
                 }
-                if (option.equals("CHANGING_ROOM")) {
+                if (option.equals("탈의실")) {
                     try{
-                        StudioOption.OptionName optionName = StudioOption.OptionName.valueOf(option);
+                        String optionNameToEng = "CHANGING_ROOM";
+                        StudioOption.OptionName optionName = StudioOption.OptionName.valueOf(optionNameToEng);
                         studios = studios.stream()
                                 .filter(studio -> studioRepository.findByOptionsExists(optionName).contains(studio))
                                 .collect(Collectors.toList());
@@ -130,9 +132,10 @@ public class StudioService {
                         System.err.println(e + option);
                     }
                 }
-                if (option.equals("DRESSING_ROOM")) {
+                if (option.equals("파우더룸")) {
                     try{
-                        StudioOption.OptionName optionName = StudioOption.OptionName.valueOf(option);
+                        String optionNameToEng = "DRESSING_ROOM";
+                        StudioOption.OptionName optionName = StudioOption.OptionName.valueOf(optionNameToEng);
                         studios = studios.stream()
                                 .filter(studio -> studioRepository.findByOptionsExists(optionName).contains(studio))
                                 .collect(Collectors.toList());
@@ -140,9 +143,10 @@ public class StudioService {
                         System.err.println(e + option);
                     }
                 }
-                if (option.equals("SUIT_RENTAL_FREE")) {
+                if (option.equals("정장")) {
                     try{
-                        StudioOption.OptionName optionName = StudioOption.OptionName.valueOf(option);
+                        String optionNameToEng = "SUIT_RENTAL_FREE";
+                        StudioOption.OptionName optionName = StudioOption.OptionName.valueOf(optionNameToEng);
                         studios = studios.stream()
                                 .filter(studio -> studioRepository.findByOptionsExists(optionName).contains(studio))
                                 .collect(Collectors.toList());
@@ -150,9 +154,10 @@ public class StudioService {
                         System.err.println(e + option);
                     }
                 }
-                if (option.equals("ORIGINAL_FILES")) {
+                if (option.equals("원본")) {
                     try{
-                        StudioOption.OptionName optionName = StudioOption.OptionName.valueOf(option);
+                        String optionNameToEng = "ORIGINAL_FILES";
+                        StudioOption.OptionName optionName = StudioOption.OptionName.valueOf(optionNameToEng);
                         studios = studios.stream()
                                 .filter(studio -> studioRepository.findByOptionsExists(optionName).contains(studio))
                                 .collect(Collectors.toList());
@@ -160,9 +165,21 @@ public class StudioService {
                         System.err.println(e + option);
                     }
                 }
-                if (option.equals("INDIVIDUAL_EDITING")) {
+                if (option.equals("보정")) {
                     try{
-                        StudioOption.OptionName optionName = StudioOption.OptionName.valueOf(option);
+                        String optionNameToEng = "INDIVIDUAL_EDITING";
+                        StudioOption.OptionName optionName = StudioOption.OptionName.valueOf(optionNameToEng);
+                        studios = studios.stream()
+                                .filter(studio -> studioRepository.findByOptionsExists(optionName).contains(studio))
+                                .collect(Collectors.toList());
+                    }catch (IllegalArgumentException e){
+                        System.err.println(e + option);
+                    }
+                }
+                if (option.equals("주차")) {
+                    try{
+                        String optionNameToEng = "PARKING_AREA";
+                        StudioOption.OptionName optionName = StudioOption.OptionName.valueOf(optionNameToEng);
                         studios = studios.stream()
                                 .filter(studio -> studioRepository.findByOptionsExists(optionName).contains(studio))
                                 .collect(Collectors.toList());

@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,7 +65,7 @@ public class StudioService {
             SortBy sortBy,
             int minPrice,
             int maxPrice,
-            List<String> options
+            String options
     ) {
         // 스튜디오 담을 리스트
         List<Studio> studios;
@@ -110,7 +107,8 @@ public class StudioService {
         }
         // 옵션 필터링
         if (options != null) {
-            for (String option : options) {
+            List<String> optionsList = Arrays.asList(options.split("%"));
+            for (String option : optionsList) {
                 if (option.equals("헤메코")) {
                     try{
                         String optionNameToEng = "HAIR_MAKEUP";

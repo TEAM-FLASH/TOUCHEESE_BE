@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -52,12 +53,13 @@ public class StudioController {
             @RequestParam(defaultValue = "POPULARITY") StudioService.SortBy sortBy,
             @RequestParam(defaultValue = "-1")int minPrice,
             @RequestParam(defaultValue = "-1")int maxPrice,
-            @RequestParam(required = false) List<String> options
+            @RequestParam(required = false) String options
     ) {
         System.out.println("requestedDateTime = " + requestedDateTime);
         System.out.println("duration = " + duration);
         System.out.println("vibeName = " + vibeName);
         System.out.println("addressGu = " + addressGu);
+        System.out.println("options = " + options);
 
         try {
             return ResponseEntity.ok(studioService.getStudiosWithFilter(requestedDateTime, duration, vibeName,

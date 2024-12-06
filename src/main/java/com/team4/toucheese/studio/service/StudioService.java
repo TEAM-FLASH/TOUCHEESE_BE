@@ -4,6 +4,7 @@ import com.team4.toucheese.studio.dto.StudioDto;
 import com.team4.toucheese.studio.entity.Studio;
 import com.team4.toucheese.studio.entity.StudioOption;
 import com.team4.toucheese.studio.repository.StudioRepository;
+import com.team4.toucheese.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
@@ -27,6 +28,7 @@ public class StudioService {
     private final long EXPIRE_TIME = 60;
 //            60 * 60;   //1시간 (60초 * 60)
     private final RedisTemplate<String, String> redisTemplate;
+    private final UserService userService;
 
     //모든 스튜디오 정보 가져와서 페이징
     public Page<StudioDto> getAllStudios(int page, int size, SortBy sortby){
@@ -224,6 +226,13 @@ public class StudioService {
         int end = Math.min((start + pageable.getPageSize()), studioDtos.size());
 
         return new PageImpl<>(studioDtos.subList(start, end), pageable, studioDtos.size());
+    }
+
+    //북마크 체크
+    public void checkBookmark(Long userId, StudioDto studioDto ){
+        if(userService.checkBookMark(userId, studioDto.getId())){
+            studioDto.setBookmark(true);
+        }
     }
 
     //정렬에 관련

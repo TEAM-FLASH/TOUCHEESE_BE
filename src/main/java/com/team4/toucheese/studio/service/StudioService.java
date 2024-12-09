@@ -30,6 +30,8 @@ public class StudioService {
     private final RedisTemplate<String, String> redisTemplate;
     private final UserService userService;
 
+    private final long userId = 1;
+
     //모든 스튜디오 정보 가져와서 페이징
     public Page<StudioDto> getAllStudios(int page, int size, SortBy sortby){
         //데이터 베이스에서 모든 데이터 가져옴
@@ -37,10 +39,17 @@ public class StudioService {
 
         //데이터 DTO로 반환
         List<StudioDto> studioDtos = studios.stream()
-                .map(StudioDto::fromEntity)
+                .map(studio -> {
+                    StudioDto studioDto = StudioDto.fromEntity(studio);
+
+                    //북마크 체크 및 설정
+                    if (userService.checkBookMark(userId, studioDto.getId())){
+                        studioDto.setBookmark(true);
+                    }
+                    return studioDto;
+                })
                 .collect(Collectors.toList());
 
-        //정렬
         studioDtos = sortStudios(studioDtos, sortby);
 
         //페이징 적용
@@ -194,7 +203,15 @@ public class StudioService {
 
         //정렬 적용
         List<StudioDto> studioDtos = studios.stream()
-                .map(StudioDto::fromEntity)
+                .map(studio -> {
+                    StudioDto studioDto = StudioDto.fromEntity(studio);
+
+                    //북마크 체크 및 설정
+                    if (userService.checkBookMark(userId, studioDto.getId())){
+                        studioDto.setBookmark(true);
+                    }
+                    return studioDto;
+                })
                 .collect(Collectors.toList());
 
         studioDtos = sortStudios(studioDtos, sortBy);
@@ -218,7 +235,15 @@ public class StudioService {
 
         //DTO로 반환
         List<StudioDto> studioDtos = studios.stream()
-                .map(StudioDto::fromEntity)
+                .map(studio -> {
+                    StudioDto studioDto = StudioDto.fromEntity(studio);
+
+                    //북마크 체크 및 설정
+                    if (userService.checkBookMark(userId, studioDto.getId())){
+                        studioDto.setBookmark(true);
+                    }
+                    return studioDto;
+                })
                 .collect(Collectors.toList());
 
         //페이징
@@ -228,12 +253,6 @@ public class StudioService {
         return new PageImpl<>(studioDtos.subList(start, end), pageable, studioDtos.size());
     }
 
-    //북마크 체크
-    public void checkBookmark(Long userId, StudioDto studioDto ){
-        if(userService.checkBookMark(userId, studioDto.getId())){
-            studioDto.setBookmark(true);
-        }
-    }
 
     //정렬에 관련
     //ENUM

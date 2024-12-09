@@ -24,7 +24,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class StudioController {
     private final StudioService studioService;
-    private final Long userId = 1L;
 
     @GetMapping("")
     public ResponseEntity<Page<StudioDto>> getAllStudios(
@@ -33,9 +32,7 @@ public class StudioController {
             @RequestParam(defaultValue = "POPULARITY") StudioService.SortBy sortBy
     ){
         try {
-            Page<StudioDto> studios = studioService.getAllStudios(page, size, sortBy);
-            studios.forEach(studio -> studioService.checkBookmark(userId, studio));
-            return ResponseEntity.ok(studios);
+            return ResponseEntity.ok(studioService.getAllStudios(page, size, sortBy));
         }catch ( ConfigDataResourceNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }catch ( IllegalArgumentException e){
@@ -65,10 +62,8 @@ public class StudioController {
         System.out.println("options = " + options);
 
         try {
-            Page<StudioDto> studios = studioService.getStudiosWithFilter(requestedDateTime, duration, vibeName,
-                    addressGu, pageable, sortBy, minPrice, maxPrice,options);
-            studios.forEach(studio -> studioService.checkBookmark(userId, studio));
-            return ResponseEntity.ok(studios);
+            return ResponseEntity.ok(studioService.getStudiosWithFilter(requestedDateTime, duration, vibeName,
+                    addressGu, pageable, sortBy, minPrice, maxPrice,options));
         }catch (ConfigDataResourceNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }catch (IllegalArgumentException e){
@@ -100,9 +95,7 @@ public class StudioController {
         try {
             //검색어 저장
             studioService.saveKeyword(keyword);
-            Page<StudioDto> studios = studioService.getStudiosWithSearch(keyword, pageable);
-            studios.forEach(studio -> studioService.checkBookmark(userId, studio));
-            return ResponseEntity.ok(studios);
+            return ResponseEntity.ok(studioService.getStudiosWithSearch(keyword, pageable));
         }catch (ConfigDataResourceNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }catch (IllegalArgumentException e){

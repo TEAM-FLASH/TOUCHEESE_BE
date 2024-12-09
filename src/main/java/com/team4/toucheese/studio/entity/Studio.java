@@ -68,7 +68,7 @@ public class Studio {
     public enum DayOfWeek {
         MON, TUE, WED, THU, FRI, SAT, SUN    }
 
-    @Builder
+    @Builder(toBuilder = true)
     public Studio(Vibe vibe, Address_Si addressSi, Address_Gu addressGu, String name, String description, String address, String phone, Long view_count, Double rating, Long bookmark_count, Long review_count, Double latitude, Double longitude, Time open_time, Time close_time, Vibe subVibe) {
         this.vibe = vibe;
         this.addressSi = addressSi;

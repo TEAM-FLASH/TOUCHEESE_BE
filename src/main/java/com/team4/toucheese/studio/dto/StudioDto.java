@@ -48,7 +48,7 @@ public class StudioDto {
 
     private Studio.DayOfWeek day_of_week;  //휴무일
 
-    private boolean bookmark;    //북마크 유무
+    private boolean bookmark = false;    //북마크 유무
 
     public static StudioDto fromEntity(Studio entity){
         return StudioDto.builder()

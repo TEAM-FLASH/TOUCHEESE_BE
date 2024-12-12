@@ -41,7 +41,7 @@ public class UserService {
 
     @Transactional
     public void deleteBookMark(Long userId, Long studioId){
-        BookMark bookMark = (BookMark) bookMarkRepository.findByIdAndStudioId(userId, studioId).orElse(null);
+        BookMark bookMark = (BookMark) bookMarkRepository.findByUserIdAndStudioId(userId, studioId).orElse(null);
         if (bookMark != null){
             Studio studio = studioRepository.findById(studioId).orElse(null);
             Long bookMarkCount = studio.getBookmark_count();

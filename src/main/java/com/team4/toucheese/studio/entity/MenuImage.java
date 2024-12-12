@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
@@ -19,4 +23,8 @@ public class MenuImage {
 
     private String url;
 
+    @CreationTimestamp
+    private LocalDateTime created_at;
+    @UpdateTimestamp
+    private LocalDateTime updated_at;
 }

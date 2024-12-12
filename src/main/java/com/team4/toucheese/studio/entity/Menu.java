@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.sql.Time;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -24,6 +26,12 @@ public class Menu {
     private String name;
     private String description;
     private Integer price;
+    private Time duration;  //촬영시간
+
+    @OneToMany(mappedBy = "menu", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    List<AdditionalOption> additionalOptions;
+    @OneToMany(mappedBy = "menu", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    List<MenuImage> menuImages;
 
     @CreationTimestamp
     private LocalDateTime created_at;

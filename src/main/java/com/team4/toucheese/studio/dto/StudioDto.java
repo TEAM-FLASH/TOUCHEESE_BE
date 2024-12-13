@@ -1,15 +1,7 @@
 package com.team4.toucheese.studio.dto;
 
-import com.team4.toucheese.address.entity.Address_Gu;
-import com.team4.toucheese.address.entity.Address_Si;
-import com.team4.toucheese.studio.entity.Menu;
-import com.team4.toucheese.studio.entity.Portfolio;
 import com.team4.toucheese.studio.entity.Studio;
-import com.team4.toucheese.vibe.entity.Vibe;
-import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
@@ -48,7 +40,7 @@ public class StudioDto {
 
     private Studio.DayOfWeek day_of_week;  //휴무일
 
-    private boolean bookmark = false;    //북마크 유무
+    private boolean bookmark;    //북마크 유무
 
     public static StudioDto fromEntity(Studio entity){
         return StudioDto.builder()

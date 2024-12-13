@@ -28,7 +28,7 @@ public class Review {
     private Menu menu;
 
     private String content;
-    private Double rating;
+    private Integer rating;
 
     @OneToMany(mappedBy = "review", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ReviewImage> reviewImages;

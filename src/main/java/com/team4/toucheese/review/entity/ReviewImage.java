@@ -20,10 +20,10 @@ public class ReviewImage {
     @ManyToOne(fetch = FetchType.LAZY)
     private Review review;
 
-    private String imageUrl;
+    private String url;
 
     @CreationTimestamp
-    private LocalDateTime createTime;
+    private LocalDateTime created_at;
     @UpdateTimestamp
-    private LocalDateTime updateTime;
+    private LocalDateTime updated_at;
 }

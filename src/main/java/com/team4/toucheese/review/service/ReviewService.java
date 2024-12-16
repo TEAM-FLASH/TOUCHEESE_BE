@@ -65,6 +65,7 @@ public class ReviewService {
         reviewDetailWithTotal.setReviewList(pagedReviews);
         reviewDetailWithTotal.setTotalImageNum(totalImageNum);
         reviewDetailWithTotal.setAvgRating(avgRating);
+        reviewDetailWithTotal.setTotalReviewNum(totalSize);
 
         return reviewDetailWithTotal;
 

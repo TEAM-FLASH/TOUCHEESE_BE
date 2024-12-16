@@ -13,5 +13,5 @@ public class ReviewDetailWithTotal {
     private List<ReviewDto> reviewList;
     private Double avgRating;
     private Integer totalImageNum;
-
+    private Integer totalReviewNum;
 }

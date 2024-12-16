@@ -1,6 +1,8 @@
 package com.team4.toucheese.studio.controller;
 
+import com.team4.toucheese.review.dto.ReviewDetailWithTotal;
 import com.team4.toucheese.review.dto.ReviewDto;
+import com.team4.toucheese.review.service.ReviewService;
 import com.team4.toucheese.studio.dto.MenuDetailDto;
 import com.team4.toucheese.studio.dto.StudioDto;
 import com.team4.toucheese.studio.service.StudioDetailService;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StudioDetailController {
     private final StudioDetailService studioDetailService;
+    private final ReviewService reviewService;
 
     @GetMapping("/{studioId}")
     public ResponseEntity<StudioDto> selectOne(@PathVariable("studioId") long StudioId) {
@@ -47,9 +50,9 @@ public class StudioDetailController {
     }
 
     @GetMapping("/{studioId}/reviews")
-    public ResponseEntity<Page<ReviewDto>> studioReview(@PathVariable("studioId") long studioId, Pageable pageable){
+    public ResponseEntity<ReviewDetailWithTotal> studioReview(@PathVariable("studioId") long studioId, Pageable pageable){
         try {
-            return ResponseEntity.ok(studioDetailService.findStudioReview(studioId, pageable));
+            return ResponseEntity.ok(reviewService.findReviewWithTotal(studioId, pageable));
         }catch ( ConfigDataResourceNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }catch ( IllegalArgumentException e){

@@ -32,7 +32,7 @@ public class ReviewDto {
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
 
-    private Double totalRating;
+    private boolean imageExists;
 
     public static ReviewDto fromEntity(Review entity){
         return ReviewDto.builder()

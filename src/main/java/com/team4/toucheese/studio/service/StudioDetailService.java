@@ -1,5 +1,6 @@
 package com.team4.toucheese.studio.service;
 
+import com.team4.toucheese.review.dto.ReviewDetailWithTotal;
 import com.team4.toucheese.review.dto.ReviewDto;
 import com.team4.toucheese.review.entity.Review;
 import com.team4.toucheese.review.repository.ReviewRepository;
@@ -45,18 +46,5 @@ public class StudioDetailService {
         //데이터 DTO로 반환 후 return
         return menus.stream().map(MenuDetailDto::fromEntity).toList();
     }
-
-    public Page<ReviewDto> findStudioReview(long studioId, Pageable pageable){
-        List<ReviewDto> reviewDtos = reviewService.findStudioReview(studioId);
-
-        //페이징 적용
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), reviewDtos.size());
-
-        return new PageImpl<>(reviewDtos.subList(start, end), pageable, reviewDtos.size());
-    }
-
-
-
 
 }

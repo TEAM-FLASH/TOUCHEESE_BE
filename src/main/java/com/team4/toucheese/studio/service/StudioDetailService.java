@@ -43,8 +43,13 @@ public class StudioDetailService {
         List<Menu> menus = menuRepository.findByStudioId(studioId);
 //        System.out.println("menus = " + menus);
 
+
         //데이터 DTO로 반환 후 return
-        return menus.stream().map(MenuDetailDto::fromEntity).toList();
+        return menus.stream().map(menu -> {
+            MenuDetailDto menuDetailDto = MenuDetailDto.fromEntity(menu);
+            menuDetailDto.setReviewCount(reviewService.countReviewNum(menu.getId()));
+            return menuDetailDto;
+        }).toList();
     }
 
 }

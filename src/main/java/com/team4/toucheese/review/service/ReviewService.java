@@ -71,4 +71,8 @@ public class ReviewService {
 
     }
 
+    public Integer countReviewNum(Long menuId){
+        return reviewRepository.findByMenu_Id(menuId).size();
+    }
+
 }

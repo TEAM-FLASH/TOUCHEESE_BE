@@ -34,6 +34,8 @@ public class MenuDetailDto {
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
 
+    private Integer reviewCount;
+
     public static MenuDetailDto fromEntity(Menu entity){
         return MenuDetailDto.builder()
                 .id(entity.getId())

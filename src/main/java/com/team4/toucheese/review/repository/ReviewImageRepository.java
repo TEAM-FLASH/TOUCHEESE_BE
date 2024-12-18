@@ -12,4 +12,6 @@ public interface ReviewImageRepository extends JpaRepository<ReviewImage, Long> 
     List<ReviewImage> findTop4ByReview_Menu_Studio_IdOrderByIdDesc(Long reviewMenuStudioId);
 
     List<ReviewImage> findByReview_Menu_Studio_Id(Long reviewMenuStudioId);
+
+    List<ReviewImage> findByReview_Menu_IdAndReview_Menu_Studio_Id(Long reviewMenuId, Long reviewMenuStudioId);
 }

@@ -49,16 +49,12 @@ public class ReviewService {
         return reviewDtos;
     }
 
-    public ReviewDetailWithTotal findReviewWithTotal(Long studioId, Pageable pageable){
+    public ReviewDetailWithTotal findReviewWithTotal(Long studioId, Pageable pageable, long menuId){
         ReviewDetailWithTotal reviewDetailWithTotal = new ReviewDetailWithTotal();
+
+        //전체 스튜디오
         List<ReviewDto> reviewDtos = findStudioReview(studioId);
         int totalSize = reviewDtos.size();
-        //페이징
-        //시작
-        int start = (int) pageable.getOffset();
-        //끝
-        int end = Math.min((start + pageable.getPageSize()), totalSize);
-        List<ReviewDto> pagedReviews = reviewDtos.subList(start, end);
 
         int totalRating = 0;
         int totalImageNum = 0;
@@ -66,7 +62,29 @@ public class ReviewService {
             totalRating += reviewDto.getRating();
             totalImageNum += reviewDto.getReviewImages().size();
         }
-        double avgRating = (double) totalRating / totalSize;
+        double avgRating = totalSize > 0 ? (double) totalRating / totalSize : 0;
+
+        //메뉴 Id에 따른 필터링
+        List<ReviewDto> filteredReviews;
+        if ( menuId != -1 ) {
+            filteredReviews = reviewDtos.stream().filter(reviewDto -> reviewDto.getMenuId() == menuId).toList();
+        }else {
+            filteredReviews = reviewDtos;
+        }
+
+        //페이징
+        //시작
+        int start = (int) pageable.getOffset();
+        //끝
+        int end = Math.min((start + pageable.getPageSize()), filteredReviews.size());
+        List<ReviewDto> pagedReviews;
+        if (start > filteredReviews.size()){
+            //시작값이 리스트 크기를 초과한 경우
+            pagedReviews = List.of();
+        }else {
+            //정상적인 경우
+            pagedReviews = filteredReviews.subList(start, end);
+        }
 
         //메뉴 이름 찾기
         List<Menu> menus = menuRepository.findByStudioId(studioId);
@@ -77,11 +95,13 @@ public class ReviewService {
 
 
         reviewDetailWithTotal.setMenuNanmeList(menus.stream().map(Menu::getName).toList());
+        reviewDetailWithTotal.setMenuIdList(menus.stream().map(Menu::getId).toList());
         reviewDetailWithTotal.setSamplePhotoList(reviewImageUrls);
         reviewDetailWithTotal.setReviewList(pagedReviews);
         reviewDetailWithTotal.setTotalImageNum(totalImageNum);
         reviewDetailWithTotal.setAvgRating(avgRating);
         reviewDetailWithTotal.setTotalReviewNum(totalSize);
+
 
         return reviewDetailWithTotal;
 

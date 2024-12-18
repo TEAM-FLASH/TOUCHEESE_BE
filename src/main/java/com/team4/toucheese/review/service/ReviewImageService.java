@@ -34,8 +34,13 @@ public class ReviewImageService {
     }
 
     //리뷰사진 모아보기
-    public Page<ReviewImageDto> findAllReviewImage(Long studioId, Pageable pageable){
-        List<ReviewImage> reviewImages = reviewImageRepository.findByReview_Menu_Studio_Id(studioId);
+    public Page<ReviewImageDto> findAllReviewImage(Long studioId, Pageable pageable, Long menuId){
+        List<ReviewImage> reviewImages;
+        if (menuId != null){
+            reviewImages = reviewImageRepository.findByReview_Menu_IdAndReview_Menu_Studio_Id(menuId, studioId);
+        }else {
+            reviewImages = reviewImageRepository.findByReview_Menu_Studio_Id(studioId);
+        }
         //DTO 변환
         List<ReviewImageDto> reviewImageDtos = reviewImages.stream().map(ReviewImageDto::fromEntity).toList();
 

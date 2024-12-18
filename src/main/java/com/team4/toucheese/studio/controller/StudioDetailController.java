@@ -68,22 +68,25 @@ public class StudioDetailController {
     }
 
     @GetMapping("/{studioId}/reviews")
-    public ResponseEntity<ReviewDetailWithTotal> studioReview(@PathVariable("studioId") long studioId, Pageable pageable){
+    public ResponseEntity<ReviewDetailWithTotal> studioReview(@PathVariable("studioId") long studioId, Pageable pageable,
+                                                              @RequestParam(defaultValue = "-1") long menuId){
         try {
-            return ResponseEntity.ok(reviewService.findReviewWithTotal(studioId, pageable));
+            return ResponseEntity.ok(reviewService.findReviewWithTotal(studioId, pageable, menuId));
         }catch ( ConfigDataResourceNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }catch ( IllegalArgumentException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }catch ( Exception e){
+            System.out.println("e = " + e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @GetMapping("/{studioId}/reviewImage")
-    public ResponseEntity<Page<ReviewImageDto>> studioReviewImage(@PathVariable("studioId") long studioId, Pageable pageable){
+    public ResponseEntity<Page<ReviewImageDto>> studioReviewImage(@PathVariable("studioId") long studioId, Pageable pageable
+    , @RequestParam(required = false) Long menuId){
         try{
-            return ResponseEntity.ok(reviewImageService.findAllReviewImage(studioId, pageable));
+            return ResponseEntity.ok(reviewImageService.findAllReviewImage(studioId, pageable, menuId));
         }catch ( ConfigDataResourceNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }catch ( IllegalArgumentException e){

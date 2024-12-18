@@ -15,5 +15,6 @@ public class ReviewDetailWithTotal {
     private Integer totalImageNum;
     private Integer totalReviewNum;
     private List<String> menuNanmeList;
+    private List<Long> menuIdList;
     private List<String> samplePhotoList;
 }

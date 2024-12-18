@@ -2,6 +2,8 @@ package com.team4.toucheese.studio.controller;
 
 import com.team4.toucheese.review.dto.ReviewDetailWithTotal;
 import com.team4.toucheese.review.dto.ReviewDto;
+import com.team4.toucheese.review.dto.ReviewImageDto;
+import com.team4.toucheese.review.service.ReviewImageService;
 import com.team4.toucheese.review.service.ReviewService;
 import com.team4.toucheese.studio.dto.MenuDetailDto;
 import com.team4.toucheese.studio.dto.PortfolioDto;
@@ -24,6 +26,7 @@ import java.util.List;
 public class StudioDetailController {
     private final StudioDetailService studioDetailService;
     private final ReviewService reviewService;
+    private final ReviewImageService reviewImageService;
 
     @GetMapping("/{studioId}")
     public ResponseEntity<StudioDto> selectOne(@PathVariable("studioId") long StudioId) {
@@ -51,10 +54,36 @@ public class StudioDetailController {
         }
     }
 
+    @GetMapping("/menu/{menuId}")
+    public ResponseEntity<MenuDetailDto> findMenu(@PathVariable("menuId") long menuId){
+        try {
+            return ResponseEntity.ok(studioDetailService.findMenu(menuId));
+        }catch ( ConfigDataResourceNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }catch ( IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }catch ( Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @GetMapping("/{studioId}/reviews")
     public ResponseEntity<ReviewDetailWithTotal> studioReview(@PathVariable("studioId") long studioId, Pageable pageable){
         try {
             return ResponseEntity.ok(reviewService.findReviewWithTotal(studioId, pageable));
+        }catch ( ConfigDataResourceNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }catch ( IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }catch ( Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/{studioId}/reviewImage")
+    public ResponseEntity<Page<ReviewImageDto>> studioReviewImage(@PathVariable("studioId") long studioId, Pageable pageable){
+        try{
+            return ResponseEntity.ok(reviewImageService.findAllReviewImage(studioId, pageable));
         }catch ( ConfigDataResourceNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }catch ( IllegalArgumentException e){

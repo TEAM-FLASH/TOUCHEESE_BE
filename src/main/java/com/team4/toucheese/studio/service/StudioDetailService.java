@@ -15,7 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -49,6 +51,12 @@ public class StudioDetailService {
             menuDetailDto.setReviewCount(reviewService.countReviewNum(menu.getId()));
             return menuDetailDto;
         }).toList();
+    }
+
+    //스튜디오의 메뉴 하나 보여주기
+    public MenuDetailDto findMenu(long MenuId){
+        Menu menu = menuRepository.findById(MenuId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return MenuDetailDto.fromEntity(menu);
     }
 
     //스튜디오 포트폴리오 모아서 보여주기

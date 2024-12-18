@@ -3,6 +3,7 @@ package com.team4.toucheese.studio.controller;
 import com.team4.toucheese.review.dto.ReviewDetailWithTotal;
 import com.team4.toucheese.review.dto.ReviewDto;
 import com.team4.toucheese.review.dto.ReviewImageDto;
+import com.team4.toucheese.review.dto.ReviewImageWithMenu;
 import com.team4.toucheese.review.service.ReviewImageService;
 import com.team4.toucheese.review.service.ReviewService;
 import com.team4.toucheese.studio.dto.MenuDetailDto;
@@ -83,10 +84,10 @@ public class StudioDetailController {
     }
 
     @GetMapping("/{studioId}/reviewImage")
-    public ResponseEntity<Page<ReviewImageDto>> studioReviewImage(@PathVariable("studioId") long studioId, Pageable pageable
+    public ResponseEntity<ReviewImageWithMenu> studioReviewImage(@PathVariable("studioId") Long studioId, Pageable pageable
     , @RequestParam(required = false) Long menuId){
         try{
-            return ResponseEntity.ok(reviewImageService.findAllReviewImage(studioId, pageable, menuId));
+            return ResponseEntity.ok(reviewImageService.reviewImageWithMenu(studioId, pageable, menuId));
         }catch ( ConfigDataResourceNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }catch ( IllegalArgumentException e){

@@ -1,8 +1,11 @@
 package com.team4.toucheese.review.service;
 
 import com.team4.toucheese.review.dto.ReviewImageDto;
+import com.team4.toucheese.review.dto.ReviewImageWithMenu;
 import com.team4.toucheese.review.entity.ReviewImage;
 import com.team4.toucheese.review.repository.ReviewImageRepository;
+import com.team4.toucheese.studio.entity.Menu;
+import com.team4.toucheese.studio.repository.MenuRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReviewImageService {
     private final ReviewImageRepository reviewImageRepository;
+    private final MenuRepository menuRepository;
 
     public Integer countReviewImageNum(Long reviewId){
         if (reviewId == null){
@@ -50,6 +54,26 @@ public class ReviewImageService {
         List<ReviewImageDto> pagedReviewImageDtos = reviewImageDtos.subList(start, end);
 
         return new PageImpl<>(pagedReviewImageDtos, pageable, reviewImageDtos.size());
+    }
+
+    //ReviewImageWithMenu 완성
+    public ReviewImageWithMenu reviewImageWithMenu(Long studioId, Pageable pageable, Long menuId){
+        ReviewImageWithMenu reviewImageWithMenu = new ReviewImageWithMenu();
+        Page<ReviewImageDto> reviewImageDtos = findAllReviewImage(studioId, pageable, menuId);
+
+        List<Menu> menus = menuRepository.findByStudioId(studioId);
+        List<Long> menuIds = menus.stream().map(Menu::getId).toList();
+        List<String> menuNames = menus.stream().map(Menu::getName).toList();
+
+        reviewImageWithMenu.setImageDtos(reviewImageDtos.getContent());
+        reviewImageWithMenu.setMenuNameList(menuNames);
+        reviewImageWithMenu.setMenuIdList(menuIds);
+        reviewImageWithMenu.setTotalPages(reviewImageDtos.getTotalPages());
+        reviewImageWithMenu.setTotalElements(reviewImageDtos.getTotalElements());
+        reviewImageWithMenu.setCurrentPage(pageable.getPageNumber());
+
+
+        return reviewImageWithMenu;
     }
 
 }

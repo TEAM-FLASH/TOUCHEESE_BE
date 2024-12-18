@@ -95,7 +95,7 @@ public class ReviewService {
         List<String> reviewImageUrls = reviewImages.stream().map(ReviewImage::getUrl).toList();
 
 
-        reviewDetailWithTotal.setMenuNanmeList(menus.stream().map(Menu::getName).toList());
+        reviewDetailWithTotal.setMenuNameList(menus.stream().map(Menu::getName).toList());
         reviewDetailWithTotal.setMenuIdList(menus.stream().map(Menu::getId).toList());
         reviewDetailWithTotal.setSamplePhotoList(reviewImageUrls);
         reviewDetailWithTotal.setReviewList(pagedReviews);

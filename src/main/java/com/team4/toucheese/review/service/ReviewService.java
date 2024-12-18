@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -49,7 +50,7 @@ public class ReviewService {
         return reviewDtos;
     }
 
-    public ReviewDetailWithTotal findReviewWithTotal(Long studioId, Pageable pageable, long menuId){
+    public ReviewDetailWithTotal findReviewWithTotal(Long studioId, Pageable pageable, Long menuId){
         ReviewDetailWithTotal reviewDetailWithTotal = new ReviewDetailWithTotal();
 
         //전체 스튜디오
@@ -66,8 +67,8 @@ public class ReviewService {
 
         //메뉴 Id에 따른 필터링
         List<ReviewDto> filteredReviews;
-        if ( menuId != -1 ) {
-            filteredReviews = reviewDtos.stream().filter(reviewDto -> reviewDto.getMenuId() == menuId).toList();
+        if ( menuId != null ) {
+            filteredReviews = reviewDtos.stream().filter(reviewDto -> Objects.equals(reviewDto.getMenuId(), menuId)).toList();
         }else {
             filteredReviews = reviewDtos;
         }

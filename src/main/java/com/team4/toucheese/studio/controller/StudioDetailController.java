@@ -69,7 +69,7 @@ public class StudioDetailController {
 
     @GetMapping("/{studioId}/reviews")
     public ResponseEntity<ReviewDetailWithTotal> studioReview(@PathVariable("studioId") long studioId, Pageable pageable,
-                                                              @RequestParam(defaultValue = "-1") long menuId){
+                                                              @RequestParam(required = false) Long menuId){
         try {
             return ResponseEntity.ok(reviewService.findReviewWithTotal(studioId, pageable, menuId));
         }catch ( ConfigDataResourceNotFoundException e){

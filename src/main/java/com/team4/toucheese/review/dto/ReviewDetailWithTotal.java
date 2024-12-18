@@ -14,7 +14,7 @@ public class ReviewDetailWithTotal {
     private Double avgRating;
     private Integer totalImageNum;
     private Integer totalReviewNum;
-    private List<String> menuNanmeList;
+    private List<String> menuNameList;
     private List<Long> menuIdList;
     private List<String> samplePhotoList;
 }

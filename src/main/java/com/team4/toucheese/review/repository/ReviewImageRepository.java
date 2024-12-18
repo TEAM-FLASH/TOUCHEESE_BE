@@ -8,4 +8,6 @@ import java.util.List;
 public interface ReviewImageRepository extends JpaRepository<ReviewImage, Long> {
     List<ReviewImage> findByReview_Id(Long reviewId);
     Boolean existsByReview_Id(Long reviewId);
+
+    List<ReviewImage> findTop4ByReview_Menu_Studio_IdOrderByIdDesc(Long reviewMenuStudioId);
 }

@@ -4,7 +4,9 @@ import com.team4.toucheese.review.dto.ReviewDetailWithTotal;
 import com.team4.toucheese.review.dto.ReviewDto;
 import com.team4.toucheese.review.service.ReviewService;
 import com.team4.toucheese.studio.dto.MenuDetailDto;
+import com.team4.toucheese.studio.dto.PortfolioDto;
 import com.team4.toucheese.studio.dto.StudioDto;
+import com.team4.toucheese.studio.entity.Portfolio;
 import com.team4.toucheese.studio.service.StudioDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
@@ -53,6 +55,19 @@ public class StudioDetailController {
     public ResponseEntity<ReviewDetailWithTotal> studioReview(@PathVariable("studioId") long studioId, Pageable pageable){
         try {
             return ResponseEntity.ok(reviewService.findReviewWithTotal(studioId, pageable));
+        }catch ( ConfigDataResourceNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }catch ( IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }catch ( Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/{studioId}/portfolio")
+    public ResponseEntity<Page<PortfolioDto>> studioPortfolio(@PathVariable("studioId") long studioId, Pageable pageable){
+        try {
+            return ResponseEntity.ok(studioDetailService.findStudioPortfolio(studioId, pageable));
         }catch ( ConfigDataResourceNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }catch ( IllegalArgumentException e){

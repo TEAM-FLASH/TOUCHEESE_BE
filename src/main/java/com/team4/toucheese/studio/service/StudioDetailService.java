@@ -1,22 +1,20 @@
 package com.team4.toucheese.studio.service;
 
-import com.team4.toucheese.review.dto.ReviewDetailWithTotal;
-import com.team4.toucheese.review.dto.ReviewDto;
-import com.team4.toucheese.review.entity.Review;
-import com.team4.toucheese.review.repository.ReviewRepository;
 import com.team4.toucheese.review.service.ReviewService;
 import com.team4.toucheese.studio.dto.MenuDetailDto;
+import com.team4.toucheese.studio.dto.PortfolioDto;
 import com.team4.toucheese.studio.dto.StudioDto;
 import com.team4.toucheese.studio.entity.Menu;
+import com.team4.toucheese.studio.entity.Portfolio;
 import com.team4.toucheese.studio.entity.Studio;
 import com.team4.toucheese.studio.repository.MenuRepository;
+import com.team4.toucheese.studio.repository.PortfolioRepository;
 import com.team4.toucheese.studio.repository.StudioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,6 +26,7 @@ public class StudioDetailService {
     private final StudioRepository studioRepository;
     private final MenuRepository menuRepository;
     private final ReviewService reviewService;
+    private final PortfolioRepository portfolioRepository;
 
     //스튜디오 하나 보여주기
     public StudioDto selectOneStudio(long studioId){
@@ -50,6 +49,22 @@ public class StudioDetailService {
             menuDetailDto.setReviewCount(reviewService.countReviewNum(menu.getId()));
             return menuDetailDto;
         }).toList();
+    }
+
+    //스튜디오 포트폴리오 모아서 보여주기
+    public Page<PortfolioDto> findStudioPortfolio(long studioId, Pageable pageable){
+        List<Portfolio> portfolios = portfolioRepository.findByStudioId(studioId);
+
+        //DTO로 변환
+        List<PortfolioDto> portfolioDtos = portfolios.stream().map(PortfolioDto::fromEntity).toList();
+
+        //페이징
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), portfolioDtos.size());
+        List<PortfolioDto> pagedPortfolioDtos = portfolioDtos.subList(start, end);
+
+        return new PageImpl<>(pagedPortfolioDtos, pageable, portfolioDtos.size());
+
     }
 
 }

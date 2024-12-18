@@ -1,9 +1,12 @@
 package com.team4.toucheese.review.service;
 
+import com.team4.toucheese.review.entity.ReviewImage;
 import com.team4.toucheese.review.repository.ReviewImageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -21,4 +24,9 @@ public class ReviewImageService {
     public boolean existReviewImage(Long reviewId){
         return reviewImageRepository.existsByReview_Id( reviewId);
     }
+
+    public List<ReviewImage> findByStudio(Long studioId){
+        return reviewImageRepository.findTop4ByReview_Menu_Studio_IdOrderByIdDesc(studioId);
+    }
+
 }

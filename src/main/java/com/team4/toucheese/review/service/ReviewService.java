@@ -3,7 +3,11 @@ package com.team4.toucheese.review.service;
 import com.team4.toucheese.review.dto.ReviewDetailWithTotal;
 import com.team4.toucheese.review.dto.ReviewDto;
 import com.team4.toucheese.review.entity.Review;
+import com.team4.toucheese.review.entity.ReviewImage;
+import com.team4.toucheese.review.repository.ReviewImageRepository;
 import com.team4.toucheese.review.repository.ReviewRepository;
+import com.team4.toucheese.studio.entity.Menu;
+import com.team4.toucheese.studio.repository.MenuRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +21,8 @@ import java.util.List;
 public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ReviewImageService reviewImageService;
+    private final MenuRepository menuRepository;
+    private final ReviewImageRepository reviewImageRepository;
 
     public List<ReviewDto> findStudioReview(Long studioId){
         if (studioId == null){
@@ -62,6 +68,16 @@ public class ReviewService {
         }
         double avgRating = (double) totalRating / totalSize;
 
+        //메뉴 이름 찾기
+        List<Menu> menus = menuRepository.findByStudioId(studioId);
+
+        //리뷰 샘플 사진
+        List<ReviewImage> reviewImages = reviewImageService.findByStudio(studioId);
+        List<String> reviewImageUrls = reviewImages.stream().map(ReviewImage::getUrl).toList();
+
+
+        reviewDetailWithTotal.setMenuNanmeList(menus.stream().map(Menu::getName).toList());
+        reviewDetailWithTotal.setSamplePhotoList(reviewImageUrls);
         reviewDetailWithTotal.setReviewList(pagedReviews);
         reviewDetailWithTotal.setTotalImageNum(totalImageNum);
         reviewDetailWithTotal.setAvgRating(avgRating);

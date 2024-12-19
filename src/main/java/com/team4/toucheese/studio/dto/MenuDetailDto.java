@@ -37,6 +37,7 @@ public class MenuDetailDto {
     private LocalDateTime updated_at;
 
     private Page<ReviewDto> reviews;
+    double avgScore;
 
     private Integer reviewCount;
 

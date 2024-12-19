@@ -124,4 +124,13 @@ public class ReviewService {
         return new PageImpl<>(reviewDtos, pageable, reviews.getTotalElements());
     }
 
+    public List<ReviewDto> findByMenuId(Long menuId){
+        if (menuId == null){
+            throw new IllegalArgumentException("menuId is null");
+        }
+        List<Review> reviews = reviewRepository.findByMenu_Id(menuId);
+
+        return reviews.stream().map(ReviewDto::fromEntity).toList();
+    }
+
 }

@@ -28,6 +28,7 @@ import java.time.LocalTime;
 import java.time.temporal.WeekFields;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,11 +68,21 @@ public class StudioDetailService {
         Menu menu = menuRepository.findById(menuId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         MenuDetailDto menuDetailDto = new MenuDetailDto();
         Page<ReviewDto> reviewDtos = reviewService.findMenuReview(menuId, pageable);
+        //리뷰 평점
+        List<ReviewDto> allReviews = reviewService.findByMenuId(menuId);
+
+        int totalReviews = allReviews.size();
+        int totalScore = allReviews.stream()
+                .filter(Objects::nonNull)
+                .mapToInt(ReviewDto::getRating)
+                .sum();
+        double avgScore = (totalReviews > 0) ? ((double)totalScore / totalReviews) : 0.0;
 
         //DTO로 변환
         menuDetailDto = MenuDetailDto.fromEntity(menu);
         menuDetailDto.setReviewCount(reviewService.countReviewNum(menu.getId()));
         menuDetailDto.setReviews(reviewDtos);
+        menuDetailDto.setAvgScore(avgScore);
 
         return menuDetailDto;
     }

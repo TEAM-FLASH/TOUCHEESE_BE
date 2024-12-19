@@ -4,6 +4,7 @@ import com.team4.toucheese.review.dto.ReviewDto;
 import com.team4.toucheese.review.service.ReviewService;
 import com.team4.toucheese.studio.dto.MenuDetailDto;
 import com.team4.toucheese.studio.dto.PortfolioDto;
+import com.team4.toucheese.studio.dto.PortfolioWithMenu;
 import com.team4.toucheese.studio.dto.StudioDto;
 import com.team4.toucheese.studio.entity.Menu;
 import com.team4.toucheese.studio.entity.Portfolio;
@@ -27,6 +28,7 @@ import java.time.LocalTime;
 import java.time.temporal.WeekFields;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -35,7 +37,7 @@ public class StudioDetailService {
     private final StudioRepository studioRepository;
     private final MenuRepository menuRepository;
     private final ReviewService reviewService;
-    private final PortfolioRepository portfolioRepository;
+    private final PortfolioService portfolioService;
 
     //스튜디오 하나 보여주기
     public StudioDto selectOneStudio(long studioId){
@@ -75,18 +77,35 @@ public class StudioDetailService {
     }
 
     //스튜디오 포트폴리오 모아서 보여주기
-    public Page<PortfolioDto> findStudioPortfolio(long studioId, Pageable pageable){
-        List<Portfolio> portfolios = portfolioRepository.findByStudioId(studioId);
+    public PortfolioWithMenu findStudioPortfolio(long studioId, Pageable pageable, Long menuId){
+        //DTO 생성
+        PortfolioWithMenu portfolioWithMenu = new PortfolioWithMenu();
 
-        //DTO로 변환
-        List<PortfolioDto> portfolioDtos = portfolios.stream().map(PortfolioDto::fromEntity).toList();
+        //Page<PortfolioDto> 가져오기
+        Page<PortfolioDto> portfolios = portfolioService.findStudioPortfolio(studioId, pageable);
+        //DTO에 set
+        portfolioWithMenu.setPortfolioDtos(portfolios);
 
-        //페이징
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), portfolioDtos.size());
-        List<PortfolioDto> pagedPortfolioDtos = portfolioDtos.subList(start, end);
+        //스튜디오의 메뉴이름 및 아이디 가져오기
+        List<Menu> menus = menuRepository.findByStudioId(studioId);
+        List<Long> menuIds = menus.stream().map(Menu::getId).toList();
+        //DTO에 set
+        portfolioWithMenu.setMenuIdList(menuIds);
+        portfolioWithMenu.setMenuNameList(menus.stream().map(Menu::getName).toList());
 
-        return new PageImpl<>(pagedPortfolioDtos, pageable, portfolioDtos.size());
+        //menuId에 따른 필터링
+        if (menuId != null){
+            //Page<> -> List<>로 변환
+            List<PortfolioDto> filteredList = portfolioWithMenu.getPortfolioDtos().getContent().stream()
+                    .filter(portfolioDto -> portfolioDto.getMenuId().equals(menuId))
+                    .toList();
+            //다시 Page형태로 변환
+            portfolioWithMenu.setPortfolioDtos(
+                    new PageImpl<>(filteredList)
+            );
+        }
+
+        return portfolioWithMenu;
 
     }
 

@@ -10,4 +10,5 @@ import java.util.List;
 
 public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
     List<Portfolio> findByStudioId(long studioId);
+    Page<Portfolio> findByStudioId(long studioId, Pageable pageable);
 }

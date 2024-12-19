@@ -8,6 +8,7 @@ import com.team4.toucheese.review.service.ReviewImageService;
 import com.team4.toucheese.review.service.ReviewService;
 import com.team4.toucheese.studio.dto.MenuDetailDto;
 import com.team4.toucheese.studio.dto.PortfolioDto;
+import com.team4.toucheese.studio.dto.PortfolioWithMenu;
 import com.team4.toucheese.studio.dto.StudioDto;
 import com.team4.toucheese.studio.entity.Portfolio;
 import com.team4.toucheese.studio.service.StudioDetailService;
@@ -98,14 +99,17 @@ public class StudioDetailController {
     }
 
     @GetMapping("/{studioId}/portfolio")
-    public ResponseEntity<Page<PortfolioDto>> studioPortfolio(@PathVariable("studioId") long studioId, Pageable pageable){
+    public ResponseEntity<PortfolioWithMenu> studioPortfolio(@PathVariable("studioId") long studioId, Pageable pageable,
+                                                             @RequestParam(required = false) Long menuId
+    ){
         try {
-            return ResponseEntity.ok(studioDetailService.findStudioPortfolio(studioId, pageable));
+            return ResponseEntity.ok(studioDetailService.findStudioPortfolio(studioId, pageable, menuId));
         }catch ( ConfigDataResourceNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }catch ( IllegalArgumentException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }catch ( Exception e){
+            System.out.println("e = " + e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

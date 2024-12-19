@@ -29,6 +29,9 @@ public class Portfolio {
     private String url;
     private String description;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Menu menu;
+
     @CreationTimestamp
     private LocalDateTime created_at;
     @UpdateTimestamp

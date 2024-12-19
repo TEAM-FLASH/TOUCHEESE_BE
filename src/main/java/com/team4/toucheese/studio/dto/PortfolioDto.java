@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,6 +24,7 @@ public class PortfolioDto {
     private String name;
     private String url;
     private String description;
+    private Long menuId;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
 
@@ -34,6 +36,7 @@ public class PortfolioDto {
                 .name(entity.getName())
                 .url(entity.getUrl())
                 .description(entity.getDescription())
+                .menuId(entity.getMenu() != null ? entity.getMenu().getId() : null)
                 .created_at(entity.getCreated_at())
                 .updated_at(entity.getUpdated_at())
                 .build();

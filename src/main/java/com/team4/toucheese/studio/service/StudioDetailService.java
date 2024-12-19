@@ -1,5 +1,6 @@
 package com.team4.toucheese.studio.service;
 
+import com.team4.toucheese.review.dto.ReviewDto;
 import com.team4.toucheese.review.service.ReviewService;
 import com.team4.toucheese.studio.dto.MenuDetailDto;
 import com.team4.toucheese.studio.dto.PortfolioDto;
@@ -60,9 +61,17 @@ public class StudioDetailService {
     }
 
     //스튜디오의 메뉴 하나 보여주기
-    public MenuDetailDto findMenu(long MenuId){
-        Menu menu = menuRepository.findById(MenuId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        return MenuDetailDto.fromEntity(menu);
+    public MenuDetailDto findMenu(long menuId, Pageable pageable){
+        Menu menu = menuRepository.findById(menuId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        MenuDetailDto menuDetailDto = new MenuDetailDto();
+        Page<ReviewDto> reviewDtos = reviewService.findMenuReview(menuId, pageable);
+
+        //DTO로 변환
+        menuDetailDto = MenuDetailDto.fromEntity(menu);
+        menuDetailDto.setReviewCount(reviewService.countReviewNum(menu.getId()));
+        menuDetailDto.setReviews(reviewDtos);
+
+        return menuDetailDto;
     }
 
     //스튜디오 포트폴리오 모아서 보여주기

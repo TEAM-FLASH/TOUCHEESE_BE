@@ -1,5 +1,6 @@
 package com.team4.toucheese.studio.dto;
 
+import com.team4.toucheese.review.dto.ReviewDto;
 import com.team4.toucheese.studio.entity.AdditionalOption;
 import com.team4.toucheese.studio.entity.Menu;
 import com.team4.toucheese.studio.entity.MenuImage;
@@ -11,6 +12,7 @@ import jakarta.persistence.OneToMany;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.domain.Page;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
@@ -33,6 +35,8 @@ public class MenuDetailDto {
     private List<MenuImageDto> menuImages;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
+
+    private Page<ReviewDto> reviews;
 
     private Integer reviewCount;
 

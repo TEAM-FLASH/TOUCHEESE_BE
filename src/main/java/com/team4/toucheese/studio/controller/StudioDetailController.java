@@ -56,9 +56,9 @@ public class StudioDetailController {
     }
 
     @GetMapping("/menu/{menuId}")
-    public ResponseEntity<MenuDetailDto> findMenu(@PathVariable("menuId") long menuId){
+    public ResponseEntity<MenuDetailDto> findMenu(@PathVariable("menuId") long menuId, Pageable pageable){
         try {
-            return ResponseEntity.ok(studioDetailService.findMenu(menuId));
+            return ResponseEntity.ok(studioDetailService.findMenu(menuId, pageable));
         }catch ( ConfigDataResourceNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }catch ( IllegalArgumentException e){

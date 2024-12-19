@@ -10,6 +10,8 @@ import com.team4.toucheese.studio.entity.Menu;
 import com.team4.toucheese.studio.repository.MenuRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -110,6 +112,16 @@ public class ReviewService {
 
     public Integer countReviewNum(Long menuId){
         return reviewRepository.findByMenu_Id(menuId).size();
+    }
+
+    //메뉴에 따른 리뷰 찾기
+    public Page<ReviewDto> findMenuReview(Long menuId, Pageable pageable){
+        if (menuId == null){
+            throw new IllegalArgumentException("menuId is null");
+        }
+        Page<Review> reviews = reviewRepository.findByMenu_Id(menuId, pageable);
+        List<ReviewDto> reviewDtos = reviews.stream().map(ReviewDto::fromEntity).toList();
+        return new PageImpl<>(reviewDtos, pageable, reviews.getTotalElements());
     }
 
 }

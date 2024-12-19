@@ -19,6 +19,7 @@ public interface StudioRepository extends JpaRepository<Studio, Long> {
     Page<Studio> findAll(Pageable pageable);
 
     //예약간의 중첩 여부 확인
+    /*
     @Query("SELECT s FROM Studio s " +
             "WHERE s.day_of_week <> :dayOfWeek " + // 1. 휴무일이 아님
             "AND NOT EXISTS (" +
@@ -40,6 +41,8 @@ public interface StudioRepository extends JpaRepository<Studio, Long> {
                                       @Param("endTime") LocalTime endTime,
                                       @Param("dayOfWeek") Studio.DayOfWeek dayOfWeek);
 
+
+     */
     //분위기에 따라 스튜디오, 포폴 필터링
     @Query("SELECT s FROM Studio s " +
             "LEFT JOIN s.portfolios p " + // 스튜디오와 연관된 포트폴리오를 가져옴

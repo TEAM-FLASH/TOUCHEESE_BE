@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -42,11 +43,43 @@ public class StudioController {
         }
     }
 
+//    @GetMapping("/filter")
+//    public ResponseEntity<Page<StudioDto>> getStudiosWithFilter(
+//            @RequestParam(required = false) LocalDateTime requestedDateTime,
+//            @RequestParam(defaultValue = "01:00:00") // 디폴트 30분
+//            LocalTime duration,
+//            @RequestParam(required = false) String vibeName,
+//            @RequestParam(required = false) String addressGu,
+//            Pageable pageable,
+//            @RequestParam(defaultValue = "POPULARITY") StudioService.SortBy sortBy,
+//            @RequestParam(defaultValue = "-1")int minPrice,
+//            @RequestParam(defaultValue = "-1")int maxPrice,
+//            @RequestParam(required = false) String options
+//    ) {
+//        System.out.println("requestedDateTime = " + requestedDateTime);
+//        System.out.println("duration = " + duration);
+//        System.out.println("vibeName = " + vibeName);
+//        System.out.println("addressGu = " + addressGu);
+//        System.out.println("options = " + options);
+//
+//        try {
+//            return ResponseEntity.ok(studioService.getStudiosWithFilter(requestedDateTime, duration, vibeName,
+//                    addressGu, pageable, sortBy, minPrice, maxPrice,options));
+//        }catch (ConfigDataResourceNotFoundException e){
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//        }catch (IllegalArgumentException e){
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+//        }catch (Exception e){
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
+
     @GetMapping("/filter")
     public ResponseEntity<Page<StudioDto>> getStudiosWithFilter(
-            @RequestParam(required = false) LocalDateTime requestedDateTime,
-            @RequestParam(defaultValue = "01:00:00") // 디폴트 30분
-            LocalTime duration,
+            @RequestParam(required = false) LocalDate date,
+            @RequestParam(required = false) List<LocalTime> times,
+            @RequestParam(defaultValue = "30") // 디폴트 30분
+            int duration,
             @RequestParam(required = false) String vibeName,
             @RequestParam(required = false) String addressGu,
             Pageable pageable,
@@ -55,22 +88,32 @@ public class StudioController {
             @RequestParam(defaultValue = "-1")int maxPrice,
             @RequestParam(required = false) String options
     ) {
-        System.out.println("requestedDateTime = " + requestedDateTime);
+        System.out.println("date = " + date);
+        if (times == null) {
+            System.out.println("null timeList ");
+        }else {
+            for (LocalTime time : times) {
+                System.out.println("time = " + time);
+            }
+        }
         System.out.println("duration = " + duration);
         System.out.println("vibeName = " + vibeName);
         System.out.println("addressGu = " + addressGu);
         System.out.println("options = " + options);
 
-        try {
-            return ResponseEntity.ok(studioService.getStudiosWithFilter(requestedDateTime, duration, vibeName,
+        return ResponseEntity.ok(studioService.getStudiosWithFilter(date, times, duration, vibeName,
                     addressGu, pageable, sortBy, minPrice, maxPrice,options));
-        }catch (ConfigDataResourceNotFoundException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }catch (IllegalArgumentException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+//        try {
+//            return ResponseEntity.ok(studioService.getStudiosWithFilter(date, times, duration, vibeName,
+//                    addressGu, pageable, sortBy, minPrice, maxPrice,options));
+//        }catch (ConfigDataResourceNotFoundException e){
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//        }catch (IllegalArgumentException e){
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+//        }catch (Exception e){
+//            System.out.println("e = " + e);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
     }
 
     @GetMapping("/search")

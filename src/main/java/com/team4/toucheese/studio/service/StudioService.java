@@ -1,7 +1,9 @@
 package com.team4.toucheese.studio.service;
 
 import com.team4.toucheese.studio.dto.StudioDto;
+import com.team4.toucheese.studio.entity.Reservation;
 import com.team4.toucheese.studio.entity.Studio;
+import com.team4.toucheese.studio.entity.StudioOpeningHours;
 import com.team4.toucheese.studio.entity.StudioOption;
 import com.team4.toucheese.studio.repository.StudioRepository;
 import com.team4.toucheese.user.service.UserService;
@@ -12,9 +14,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -68,8 +72,11 @@ public class StudioService {
 
     //필터링으로 스튜디오 보여주기
     public Page<StudioDto> getStudiosWithFilter(
-            LocalDateTime requestedDateTime,
-            LocalTime duration,
+//            LocalDateTime requestedDateTime,
+//            LocalTime duration,
+            LocalDate date,
+            List<LocalTime> timeList,
+            int duration,   //촬영시간 분
             String vibeName,
             String addressGu,
             Pageable pageable,
@@ -79,21 +86,39 @@ public class StudioService {
             String options
     ) {
         // 스튜디오 담을 리스트
-        List<Studio> studios;
+        List<Studio> studios = studioRepository.findAll();
 
         // 요청된 날짜와 시간으로 startTime과 endTime을 설정
-        if (requestedDateTime != null && duration != null) {
-            LocalDate date = requestedDateTime.toLocalDate();
-            LocalTime startTime = requestedDateTime.toLocalTime();
-            LocalTime endTime = startTime.plusHours(duration.getHour()).plusMinutes(duration.getMinute());
-            Studio.DayOfWeek dayOfWeek = Studio.DayOfWeek.valueOf(requestedDateTime
-                    .getDayOfWeek()
-                    .toString()
-                    .substring(0, 3)
-                    .toUpperCase());
-            studios = studioRepository.findAvailableStudios(date, startTime, endTime, dayOfWeek);
-        }else {
-            studios = studioRepository.findAll();
+//        if (requestedDateTime != null && duration != null) {
+//            LocalDate date = requestedDateTime.toLocalDate();
+//            LocalTime startTime = requestedDateTime.toLocalTime();
+//            LocalTime endTime = startTime.plusHours(duration.getHour()).plusMinutes(duration.getMinute());
+//            Studio.DayOfWeek dayOfWeek = Studio.DayOfWeek.valueOf(requestedDateTime
+//                    .getDayOfWeek()
+//                    .toString()
+//                    .substring(0, 3)
+//                    .toUpperCase());
+//            studios = studioRepository.findAvailableStudios(date, startTime, endTime, dayOfWeek);
+//        }else {
+//            studios = studioRepository.findAll();
+//        }
+
+        if (date != null) {
+            studios = studios.stream()
+                    .filter(studio -> {
+                        return isStudioAvailableByDate(studio, date);
+                    })
+                    .filter(studio -> {
+                        if (timeList != null && !timeList.isEmpty()) {
+                            //시간대가 있는 경우
+                            return timeList.stream()
+                                    .anyMatch(time -> isStudioAvailableByTime(studio, date, time, duration));
+                        }else {
+                            //시간대가 없는 경우 가능 여부만 확인
+                            return hasAvailableTimesOnDate(studio, date, duration);
+                        }
+                    })
+                    .toList();
         }
 
         // vibeName 필터링
@@ -342,6 +367,107 @@ public class StudioService {
             }
         }
     }
+
+    /*
+    * 예약 관련
+    * */
+
+    //날짜에 따른 스튜디오 예약 가능 여부
+    private boolean isStudioAvailableByDate(Studio studio, LocalDate date){
+        //특별 휴무일 인지 확인
+        if (studio.getSpecialHolidays().isEmpty()) return false;
+        boolean isSpecialHoliday = studio.getSpecialHolidays().stream()
+                .anyMatch(studioSpecialHoliday -> studioSpecialHoliday.getDate().equals(date));
+        if (isSpecialHoliday) return false;
+
+        //날짜가 스튜디오 휴무일인지
+        //특정 주의 요일 휴무 확인
+        //몇주차 계산
+        WeekFields weekFields = WeekFields.of(DayOfWeek.MONDAY, 1);
+//        System.out.println("weekFields = " + weekFields);
+        //특정 월의 몇 번째 주인지
+        int weekOfMonth = date.get(weekFields.weekOfMonth());
+//        System.out.println("weekOfMonth = " + weekOfMonth);
+        //휴무확인
+        if (studio.getHolidays().isEmpty()) return false;
+        boolean isHoliday = studio.getHolidays().stream()
+                .anyMatch(studioHoliday -> studioHoliday.getWeekOfMonth() == weekOfMonth
+                        && studioHoliday.getDayOfWeek() == date.getDayOfWeek());
+        if (isHoliday) return false;
+
+        return true;
+    }
+
+    //시간대 기반 예약 가능 여부 확인
+    private boolean isStudioAvailableByTime(Studio studio, LocalDate date, LocalTime time, int duration){
+//        System.out.println("time = " + time);
+//        System.out.println("date = " + date);
+        LocalTime endTime = time.plusMinutes(duration);
+
+        //예약 충돌 여부 확인
+        boolean hasConflict = studio.getReservations().stream()
+                .anyMatch(reservation -> {
+                    //예약 시작 및 종료 시간
+                    LocalTime reservationStartTime = reservation.getStart_time();
+                    LocalTime reservationEndTime = reservation.getEnd_time();
+
+                    //예약 시간이 주어진 시간과 겹치는지 확인
+                    return reservation.getDate().equals(date) &&
+                            !(endTime.isBefore(reservationStartTime) || time.isAfter(reservationEndTime));
+                });
+
+        System.out.println("hasConflict = " + hasConflict);
+        return !hasConflict;    //겹치면 false
+    }
+
+    //선택된 날짜에 스튜디오가 가능한 시간대가 하나라도 있는지 확인
+    private boolean hasAvailableTimesOnDate(Studio studio, LocalDate date, int duration) {
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+//        System.out.println("dayOfWeek = " + dayOfWeek);
+        StudioOpeningHours openingHours = studio.getOpeningHours().stream()
+                .filter(hours -> hours.getDayOfWeek() == dayOfWeek)
+                .findFirst().orElse(null);
+
+//        System.out.println("openingHours = " + openingHours);
+        if (openingHours == null || openingHours.isClosed()) return false;
+
+        // 스튜디오의 운영 시간
+        LocalTime openTime = openingHours.getOpenTime().toLocalTime();
+        LocalTime closeTime = openingHours.getCloseTime().toLocalTime();
+
+        // 예약된 시간과 비교하여 가능 여부 확인
+        List<Reservation> reservations = studio.getReservations().stream()
+                .filter(reservation -> reservation.getDate().equals(date))
+                .toList();
+
+        LocalTime currentTime = openTime;
+        while (currentTime.plusMinutes(duration).isBefore(closeTime) || currentTime.plusMinutes(duration).equals(closeTime)) {
+            // 현재 시간부터 duration까지 가능한지 확인
+            LocalTime plannedEndTime = currentTime.plusMinutes(duration);
+//            System.out.println("plannedEndTime = " + plannedEndTime);
+            LocalTime finalCurrentTime = currentTime;
+//            System.out.println("finalCurrentTime = " + finalCurrentTime);
+            boolean isTimeAvailable = reservations.stream()
+                    .noneMatch(reservation -> {
+                        LocalTime reservedStart = reservation.getStart_time();
+                        LocalTime reservedEnd = reservation.getEnd_time();
+
+                        // 현재 시간과 예약 시간이 겹친다면 false
+                        return !(plannedEndTime.isBefore(reservedStart) || finalCurrentTime.isAfter(reservedEnd) || finalCurrentTime.equals(reservedEnd));
+                    });
+
+            if (isTimeAvailable) {
+                return true; // 하나라도 가능한 시간이 있다면 true
+            }
+
+            currentTime = currentTime.plusMinutes(30); // 30분 단위로 탐색
+        }
+
+        return false;
+    }
+
+
+
 
 
 

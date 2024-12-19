@@ -7,6 +7,7 @@ import com.team4.toucheese.studio.dto.StudioDto;
 import com.team4.toucheese.studio.entity.Menu;
 import com.team4.toucheese.studio.entity.Portfolio;
 import com.team4.toucheese.studio.entity.Studio;
+import com.team4.toucheese.studio.entity.StudioOpeningHours;
 import com.team4.toucheese.studio.repository.MenuRepository;
 import com.team4.toucheese.studio.repository.PortfolioRepository;
 import com.team4.toucheese.studio.repository.StudioRepository;
@@ -19,7 +20,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.temporal.WeekFields;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @Slf4j
@@ -72,6 +78,40 @@ public class StudioDetailService {
         List<PortfolioDto> pagedPortfolioDtos = portfolioDtos.subList(start, end);
 
         return new PageImpl<>(pagedPortfolioDtos, pageable, portfolioDtos.size());
+
+    }
+
+    //스튜디오 오픈 여부
+    public boolean isStudioOpen(Long studioId, LocalDate date, LocalTime time){
+        Studio studio = studioRepository.findById(studioId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        //특별 휴무 확인
+        boolean isSpecialHoliday = studio.getSpecialHolidays().stream()
+                .anyMatch(studioSpecialHoliday -> studioSpecialHoliday.getDate().equals(date));
+        if (isSpecialHoliday) return false;
+
+        //특정 주의 요일 휴무 확인
+        //몇주차 계산
+        WeekFields weekFields = WeekFields.of(Locale.getDefault());
+        //특정 월의 몇 번째 주인지
+        int weekOfMonth = date.get(weekFields.weekOfMonth());
+        //휴무확인
+        boolean isHoliday = studio.getHolidays().stream()
+                .anyMatch(studioHoliday -> studioHoliday.getWeekOfMonth() == weekOfMonth
+                && studioHoliday.getDayOfWeek() == date.getDayOfWeek());
+        if (isHoliday) return false;
+
+        //요일별 휴무 확인
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        StudioOpeningHours openingHours = studio.getOpeningHours().stream()
+                .filter(studioOpeningHours -> studioOpeningHours.getDayOfWeek() == dayOfWeek)
+                .findFirst().orElse(null);
+        if (openingHours == null || openingHours.isClosed()) return false;
+
+
+        //시간 확인
+        return time.isAfter(openingHours.getOpenTime().toLocalTime())
+                && time.isBefore(openingHours.getCloseTime().toLocalTime());
 
     }
 

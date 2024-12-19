@@ -57,6 +57,22 @@ public class Studio {
     @OneToMany(mappedBy = "studio", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Reservation> reservations;
 
+    //스튜디오 휴무일 및 영업시간
+
+    //요일별 영업시간
+    @OneToMany(mappedBy = "studio", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<StudioOpeningHours> openingHours;
+
+    //특정 주의 요일 휴무
+    @OneToMany(mappedBy = "studio", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<StudioHoliday> holidays;
+
+    //특정 날 휴무
+    @OneToMany(mappedBy = "studio", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<StudioSpecialHoliday> specialHolidays;
+
+
+
     @CreationTimestamp
     private LocalDateTime created_at;
     @UpdateTimestamp

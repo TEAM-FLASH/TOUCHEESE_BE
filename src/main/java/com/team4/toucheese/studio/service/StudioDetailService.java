@@ -111,6 +111,7 @@ public class StudioDetailService {
         //DTO에 set
         portfolioWithMenu.setMenuIdList(menuIds);
         portfolioWithMenu.setMenuNameList(menus.stream().map(Menu::getName).toList());
+        portfolioWithMenu.setStudioName(Objects.requireNonNull(menus.stream().findFirst().orElse(null)).getStudio().getName());
 
         //menuId에 따른 필터링
         if (menuId != null){

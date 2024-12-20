@@ -16,4 +16,6 @@ public class PortfolioWithMenu {
     private List<Long> menuIdList;
     private List<String> menuNameList;
 
+    private String studioName;
+
 }

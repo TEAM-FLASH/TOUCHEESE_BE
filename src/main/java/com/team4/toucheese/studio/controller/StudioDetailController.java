@@ -6,10 +6,7 @@ import com.team4.toucheese.review.dto.ReviewImageDto;
 import com.team4.toucheese.review.dto.ReviewImageWithMenu;
 import com.team4.toucheese.review.service.ReviewImageService;
 import com.team4.toucheese.review.service.ReviewService;
-import com.team4.toucheese.studio.dto.MenuDetailDto;
-import com.team4.toucheese.studio.dto.PortfolioDto;
-import com.team4.toucheese.studio.dto.PortfolioWithMenu;
-import com.team4.toucheese.studio.dto.StudioDto;
+import com.team4.toucheese.studio.dto.*;
 import com.team4.toucheese.studio.entity.Portfolio;
 import com.team4.toucheese.studio.service.StudioDetailService;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +28,7 @@ public class StudioDetailController {
     private final ReviewImageService reviewImageService;
 
     @GetMapping("/{studioId}")
-    public ResponseEntity<StudioDto> selectOne(@PathVariable("studioId") long StudioId) {
+    public ResponseEntity<StudioDetailDto> selectOne(@PathVariable("studioId") long StudioId) {
         try {
             return ResponseEntity.ok(studioDetailService.selectOneStudio(StudioId));
         }catch ( ConfigDataResourceNotFoundException e){

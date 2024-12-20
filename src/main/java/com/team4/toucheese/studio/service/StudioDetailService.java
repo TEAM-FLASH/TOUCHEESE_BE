@@ -2,10 +2,7 @@ package com.team4.toucheese.studio.service;
 
 import com.team4.toucheese.review.dto.ReviewDto;
 import com.team4.toucheese.review.service.ReviewService;
-import com.team4.toucheese.studio.dto.MenuDetailDto;
-import com.team4.toucheese.studio.dto.PortfolioDto;
-import com.team4.toucheese.studio.dto.PortfolioWithMenu;
-import com.team4.toucheese.studio.dto.StudioDto;
+import com.team4.toucheese.studio.dto.*;
 import com.team4.toucheese.studio.entity.Menu;
 import com.team4.toucheese.studio.entity.Portfolio;
 import com.team4.toucheese.studio.entity.Studio;
@@ -41,10 +38,21 @@ public class StudioDetailService {
     private final PortfolioService portfolioService;
 
     //스튜디오 하나 보여주기
-    public StudioDto selectOneStudio(long studioId){
+    public StudioDetailDto selectOneStudio(long studioId){
         Studio studio = studioRepository.findById(studioId).orElse(null);
         if (studio != null) {
-            return StudioDto.fromEntity(studio);
+            StudioDetailDto studioDetailDto = StudioDetailDto.fromEntity(studio);
+
+            //영업중임을 확인하기위한 시간
+            LocalDate nowDate = LocalDate.now();
+            LocalTime nowTime = LocalTime.now();
+
+            //영업중인지 확인
+            studioDetailDto.setOpen(isStudioOpen(studioId, nowDate, nowTime));
+
+
+            return studioDetailDto;
+
         }else
             return null;
     }

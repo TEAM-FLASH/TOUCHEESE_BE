@@ -168,12 +168,14 @@ public class StudioDetailService {
     @Transactional
     public void plusViewCount(Long studioId){
         Studio studio = studioRepository.findById(studioId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        if (studio != null){
-            Long nowViewCount = studio.getView_count();
-            Long updateViewCount = nowViewCount + 1;
-            studio.toBuilder().view_count(updateViewCount).build();
-            studioRepository.save(studio);
-        }
+
+        //View count update
+        Studio updatedStudio = studio.toBuilder()
+                .view_count(studio.getView_count() + 1)
+                .build();
+
+        //객체 저장
+        studioRepository.save(updatedStudio);
     }
 
 }

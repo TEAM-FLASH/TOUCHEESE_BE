@@ -29,12 +29,10 @@ public class UserService {
             // 북마크 추가가 안되어 있을때
             if (!checkBookMark(userId, studioId)){
                 //studio의 bookmark_count를 +1
-                Long bookMarkCount = studio.getBookmark_count();
-                bookMarkCount++;
-                studio.toBuilder().bookmark_count(bookMarkCount).build();
+                Studio updatedStudio = studio.toBuilder().bookmark_count(studio.getBookmark_count() + 1).build();
 
                 bookMarkRepository.save(bookMark);
-                studioRepository.save(studio);
+                studioRepository.save(updatedStudio);
             }
         }
     }
@@ -44,14 +42,11 @@ public class UserService {
         BookMark bookMark = (BookMark) bookMarkRepository.findByUserIdAndStudioId(userId, studioId).orElse(null);
         if (bookMark != null){
             Studio studio = studioRepository.findById(studioId).orElse(null);
-            Long bookMarkCount = studio.getBookmark_count();
-            if (bookMarkCount <= 0){
-                bookMarkCount = 0L;
-                studio.toBuilder().bookmark_count(bookMarkCount).build();
-            }else {
-                studio.toBuilder().bookmark_count(bookMarkCount - 1).build();
-            };
-            studioRepository.save(studio);
+            Long currentCount = studio.getBookmark_count();
+            Studio updatedStudio = studio.toBuilder()
+                    .bookmark_count(currentCount > 0 ? currentCount-1 : 0)
+                    .build();
+            studioRepository.save(updatedStudio);
             bookMarkRepository.delete(bookMark);
         }
     }

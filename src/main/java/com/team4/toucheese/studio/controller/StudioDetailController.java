@@ -28,9 +28,10 @@ public class StudioDetailController {
     private final ReviewImageService reviewImageService;
 
     @GetMapping("/{studioId}")
-    public ResponseEntity<StudioDetailDto> selectOne(@PathVariable("studioId") long StudioId) {
+    public ResponseEntity<StudioDetailDto> selectOne(@PathVariable("studioId") long studioId) {
         try {
-            return ResponseEntity.ok(studioDetailService.selectOneStudio(StudioId));
+            studioDetailService.plusViewCount(studioId);
+            return ResponseEntity.ok(studioDetailService.selectOneStudio(studioId));
         }catch ( ConfigDataResourceNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }catch ( IllegalArgumentException e){

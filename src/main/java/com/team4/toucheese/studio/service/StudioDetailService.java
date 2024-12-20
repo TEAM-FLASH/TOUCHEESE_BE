@@ -10,6 +10,7 @@ import com.team4.toucheese.studio.entity.StudioOpeningHours;
 import com.team4.toucheese.studio.repository.MenuRepository;
 import com.team4.toucheese.studio.repository.PortfolioRepository;
 import com.team4.toucheese.studio.repository.StudioRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -161,6 +162,18 @@ public class StudioDetailService {
         return time.isAfter(openingHours.getOpenTime().toLocalTime())
                 && time.isBefore(openingHours.getCloseTime().toLocalTime());
 
+    }
+
+    //조회수 늘리기
+    @Transactional
+    public void plusViewCount(Long studioId){
+        Studio studio = studioRepository.findById(studioId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if (studio != null){
+            Long nowViewCount = studio.getView_count();
+            Long updateViewCount = nowViewCount + 1;
+            studio.toBuilder().view_count(updateViewCount).build();
+            studioRepository.save(studio);
+        }
     }
 
 }

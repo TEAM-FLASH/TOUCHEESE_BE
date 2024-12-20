@@ -25,6 +25,7 @@ public class PortfolioDto {
     private String url;
     private String description;
     private Long menuId;
+    private String menuName;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
 
@@ -37,6 +38,7 @@ public class PortfolioDto {
                 .url(entity.getUrl())
                 .description(entity.getDescription())
                 .menuId(entity.getMenu() != null ? entity.getMenu().getId() : null)
+                .menuName(entity.getMenu() != null ? entity.getMenu().getName() : null)
                 .created_at(entity.getCreated_at())
                 .updated_at(entity.getUpdated_at())
                 .build();

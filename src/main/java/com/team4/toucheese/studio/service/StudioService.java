@@ -383,7 +383,7 @@ public class StudioService {
         //날짜가 스튜디오 휴무일인지
         //특정 주의 요일 휴무 확인
         //몇주차 계산
-        WeekFields weekFields = WeekFields.of(DayOfWeek.MONDAY, 1);
+        WeekFields weekFields = WeekFields.of(Locale.getDefault());
 //        System.out.println("weekFields = " + weekFields);
         //특정 월의 몇 번째 주인지
         int weekOfMonth = date.get(weekFields.weekOfMonth());

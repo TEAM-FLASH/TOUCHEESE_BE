@@ -27,6 +27,9 @@ public class Menu {
     private String description;
     private Integer price;
     private Time duration;  //촬영시간
+    private String pictureNum;  //기본 촬영 수
+    private String pictureSize; //인화 사이즈
+    private String offerFile;   //기본 제공 파일
 
     @OneToMany(mappedBy = "menu", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<AdditionalOption> additionalOptions;

@@ -31,6 +31,9 @@ public class MenuDetailDto {
     private String description;
     private Integer price;
     private Time duration;  //촬영시간
+    private String pictureNum;
+    private String pictureSize;
+    private String offerFile;
     private List<AdditionalOptionDto> additionalOptions;
     private List<MenuImageDto> menuImages;
     private LocalDateTime created_at;
@@ -50,6 +53,9 @@ public class MenuDetailDto {
                 .description(entity.getDescription())
                 .price(entity.getPrice())
                 .duration(entity.getDuration())
+                .pictureNum(entity.getPictureNum())
+                .pictureSize(entity.getPictureSize())
+                .offerFile(entity.getOfferFile())
                 .additionalOptions(entity.getAdditionalOptions().stream().map(AdditionalOptionDto::fromEntity).toList())
                 .menuImages(entity.getMenuImages().stream().map(MenuImageDto::fromEntity).toList())
                 .created_at(entity.getCreated_at())

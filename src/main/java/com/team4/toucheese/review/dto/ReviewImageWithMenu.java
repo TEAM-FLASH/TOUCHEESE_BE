@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewImageWithMenu {
-    private List<ReviewImageDto> imageDtos;
+    private List<ReviewImageDetailDto> imageDtos;
     private List<String> menuNameList;
     private List<Long> menuIdList;
     private Integer totalPages;

@@ -27,6 +27,7 @@ public class LoginController {
     @GetMapping("/my-profile")
     public String myProfile(Authentication authentication) {
         System.out.println(authentication.getName());
+        System.out.println(authentication.getPrincipal());
         return "my-profile";
     }
 

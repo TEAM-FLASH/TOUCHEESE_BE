@@ -52,7 +52,7 @@ public class JpaUserDetailsManager implements UserDetailsService {
 
     // 우선 개발 해볼 것
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public CustomUserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<UserEntity> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) throw new UsernameNotFoundException(email);
 

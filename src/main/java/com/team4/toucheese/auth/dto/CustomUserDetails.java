@@ -22,6 +22,7 @@ public class CustomUserDetails implements UserDetails {
     private String password;
     private String email;
     private String phone;
+    private String registration;
     private String role;
 
     @Override
@@ -41,6 +42,7 @@ public class CustomUserDetails implements UserDetails {
                 .password(entity.getPassword())
                 .email(entity.getEmail())
                 .phone(entity.getPhone())
+                .registration(entity.getRegistration())
                 .role(entity.getRole())
                 .build();
     }

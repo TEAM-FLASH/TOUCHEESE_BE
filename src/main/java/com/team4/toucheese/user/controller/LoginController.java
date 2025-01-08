@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/users")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class LoginController {
 
@@ -46,7 +46,7 @@ public class LoginController {
         if (password.equals(passwordCheck)){
             manager.createUser(username, password, passwordCheck);
         }
-        return "redirect:/users/login";
+        return "redirect:/auth/login";
     }
 
 }

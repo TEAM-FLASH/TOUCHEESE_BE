@@ -21,10 +21,10 @@
         <div class="row gx-5 justify-content-center">
           <div class="col-lg-8 col-xl-6">
             <h1 class="text-center mb-5">로그인</h1>
-            <form action="/users/login" method="post">
+            <form action="/auth/login" method="post">
               <div class="form-floating mb-3">
-                <input class="form-control" id="identifier" name="username" type="text" placeholder="Enter your username...">
-                <label for="identifier">ID</label>
+                <input class="form-control" id="email" name="email" type="text" placeholder="Enter your username...">
+                <label for="email">Email</label>
               </div>
               <div class="form-floating mb-3">
                 <input class="form-control" id="password" name="password" type="password" placeholder="Enter your password...">
@@ -35,6 +35,9 @@
             </form>
           </div>
         </div>
+        <!-- login.html 어디에든 -->
+        <a href="/oauth2/authorization/kakao">카카오</a>
+        <a href="/oauth2/authorization/naver">네이버</a>
 
       </div>
     </div>

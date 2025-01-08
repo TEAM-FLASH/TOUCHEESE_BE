@@ -2,6 +2,8 @@ package com.team4.toucheese.auth.config;
 
 //import com.team4.toucheese.auth.service.JpaUserDetailsManager;
 import com.team4.toucheese.auth.jwt.JwtFilter;
+import com.team4.toucheese.auth.oauth2.service.OAuth2UserServiceImpl;
+import com.team4.toucheese.auth.oauth2.utils.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,30 +17,45 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
     private final JwtFilter jwtFilter;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final OAuth2UserServiceImpl oAuth2UserService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
+        http.cors(cors -> corsConfigurationSource());
         http.authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/studio/**",
-                                "/auth/login"
+                                "/auth/**",
+                                "/token/**"
                         ).permitAll()
                         .requestMatchers(
-                                "/users/my-profile",
-                                "/users/logout"
+                                "/auth/my-profile",
+                                "/auth/logout"
                         ).authenticated()
                         .requestMatchers(
-                                "/users/register"
+                                "/auth/register"
                         ).anonymous()
         )
+                .oauth2Login(oauth2Login -> oauth2Login
+                        .loginPage("/auth/login")
+                        .successHandler(oAuth2SuccessHandler)
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(oAuth2UserService))
+                )
                 //로그인
 //                .formLogin(formLogin -> formLogin.loginPage("/users/login")
 //                        .defaultSuccessUrl("/users/my-profile")
@@ -55,6 +72,18 @@ public class WebSecurityConfig {
         ;
 
         return http.build();
+    }
+
+    @Bean public CorsConfigurationSource corsConfigurationSource(){
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://toucheese.store"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
 //    @Bean

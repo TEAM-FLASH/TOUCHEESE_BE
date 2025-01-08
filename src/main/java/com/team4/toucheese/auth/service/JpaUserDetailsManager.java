@@ -68,7 +68,29 @@ public class JpaUserDetailsManager implements UserDetailsService {
             UserEntity newUser = UserEntity.builder()
                     .email(username)
                     .password(passwordEncoder.encode(password))
-                    .role("ROLE_USER,READ")
+                    .role("ROLE_USER,USER")
+                    .registration("EMAIL")
+                    .build();
+
+            userRepository.save(newUser);
+
+        } catch (ClassCastException e) {
+            log.error("failed to cast to {}", CustomUserDetails.class, e );
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public void createUser(CustomUserDetails userDetails) {
+        if (userExists(userDetails.getEmail())) throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
+
+        try{
+            UserEntity newUser = UserEntity.builder()
+                    .username(userDetails.getUsername())
+                    .email(userDetails.getEmail())
+                    .password(passwordEncoder.encode(userDetails.getPassword()))
+                    .phone(userDetails.getPhone())
+                    .role("ROLE_USER,USER")
+                    .registration(userDetails.getRegistration())
                     .build();
 
             userRepository.save(newUser);

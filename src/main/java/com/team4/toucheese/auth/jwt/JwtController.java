@@ -30,7 +30,7 @@ public class JwtController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam String email, @RequestParam String password) {
+    public ResponseEntity<?> login(@RequestParam(value = "email") String email, @RequestParam(value = "password") String password) {
         // 사용자 정보 가져오기
         try {
             var userDetails = userDetailsManager.loadUserByUsername(email);

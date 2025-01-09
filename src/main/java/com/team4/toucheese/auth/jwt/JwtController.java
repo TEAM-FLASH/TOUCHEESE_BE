@@ -24,6 +24,11 @@ public class JwtController {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
+    @GetMapping("/login")
+    public ResponseEntity<String> login() {
+        return ResponseEntity.ok("login-page");
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam String email, @RequestParam String password) {
         // 사용자 정보 가져오기

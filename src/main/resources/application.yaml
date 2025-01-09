@@ -17,7 +17,7 @@ spring:
           naver:
             client-id: ${NAVER_CLIENT_ID}
             client-secret: ${NAVER_CLIENT_SECRET}
-            redirect-uri: http://localhost:5173/user/auth/naver/callback
+            redirect-uri: https://www.toucheeseapi.shop/login/oauth2/code/naver
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post
             client-name: Naver
@@ -29,7 +29,7 @@ spring:
             # REST API키
             client-id: ${KAKAO_CLIENT_ID}
             client-secret: ${KAKAO_CLIENT_SECRET}
-            redirect-uri: http://localhost:5173/user/auth/kakao/callback
+            redirect-uri: https://www.toucheeseapi.shop/login/oauth2/code/kakao
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post
             client-name: Kakao

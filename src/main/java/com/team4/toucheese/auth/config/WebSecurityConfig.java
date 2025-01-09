@@ -40,7 +40,8 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 "/studio/**",
                                 "/auth/**",
-                                "/token/**"
+                                "/token/**",
+                                "/user/auth/kakao/callback"
                         ).permitAll()
                         .requestMatchers(
                                 "/auth/my-profile",

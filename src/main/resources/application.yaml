@@ -63,3 +63,8 @@ server:
       force: true
 jwt:
   secret: ${JWT_SECRET}
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG

@@ -75,15 +75,18 @@ public class OAuth2SuccessHandler
             //세션에 Email 저장
             request.getSession().setAttribute("email", email);
 
+            // 클라이언트로 JWT 반환 (헤더 방식)
+            response.setHeader("Authorization", "Bearer " + jwt);
+
             String targetUrl =
-                    "https://www.toucheeseapi.shop/auth/val";
+                    "http://localhost:5173/auth/val";
 //                    "http://localhost:8080/auth/val"; //로컬
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
 
         }else{
             String targetUrl =
-                    "https://www.toucheeseapi.shop/auth/val?error=failregistration";
-//                    "http://localhost:8080/auth/val?error=failregistration";
+                    "http://localhost:5173/auth/val?error=failregistration";
+//                    "http://localhost:8080/auth/val?error=failregistration";  //로컬
             request.getSession().setAttribute("error", userRepository.findByEmail(email).get().getRegistration());
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
         };

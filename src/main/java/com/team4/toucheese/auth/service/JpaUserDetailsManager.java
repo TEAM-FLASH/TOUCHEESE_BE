@@ -27,12 +27,12 @@ public class JpaUserDetailsManager implements UserDetailsService {
     ) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
-        if ( !userRepository.existsByEmail("user1@a.a")) {
+        if ( !userRepository.existsByEmail("toucheese@gmail.com") ) {
             UserEntity user1 = new UserEntity();
             user1 = user1.toBuilder()
-                    .username("김멋사")
-                    .password(passwordEncoder.encode("password"))
-                    .email("user1@a.a")
+                    .username("터치즈")
+                    .password(passwordEncoder.encode("1q2w3e4r1!"))
+                    .email("toucheese@gmail.com")
                     .phone("010-1234-5678")
                     .role("ROLE_USER,USER")
                     .build();

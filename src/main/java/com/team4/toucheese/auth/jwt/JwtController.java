@@ -1,5 +1,6 @@
 package com.team4.toucheese.auth.jwt;
 
+import com.team4.toucheese.auth.dto.LoginDto;
 import com.team4.toucheese.auth.dto.LoginSuccessDto;
 import com.team4.toucheese.auth.service.JpaUserDetailsManager;
 import com.team4.toucheese.user.entity.UserEntity;
@@ -30,13 +31,15 @@ public class JwtController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam(value = "email") String email, @RequestParam(value = "password") String password) {
+    public ResponseEntity<?> login(
+            @RequestBody LoginDto loginDto
+    ){
         // 사용자 정보 가져오기
         try {
-            var userDetails = userDetailsManager.loadUserByUsername(email);
+            var userDetails = userDetailsManager.loadUserByUsername(loginDto.getEmail());
 
             // 패스워드 검증
-            if (passwordEncoder.matches(password, userDetails.getPassword()) && userDetails.getRegistration().equals("EMAIL")) {
+            if (passwordEncoder.matches(loginDto.getPassword(), userDetails.getPassword()) && userDetails.getRegistration().equals("EMAIL")) {
                 // JWT 토큰 발급
                 String token = jwtUtil.generateToken(userDetails.getEmail());
                 LoginSuccessDto dto = new LoginSuccessDto();
@@ -47,7 +50,7 @@ public class JwtController {
                 dto.setRegistration(userDetails.getRegistration());
                 dto.setUser_id(userDetails.getId());
                 return ResponseEntity.ok(dto);
-            } else if ( passwordEncoder.matches(password, userDetails.getPassword()) && !userDetails.getRegistration().equals("EMAIL")) {
+            } else if ( passwordEncoder.matches(loginDto.getPassword(), userDetails.getPassword()) && !userDetails.getRegistration().equals("EMAIL")) {
                 return ResponseEntity.status(401).body(Map.of("error", userDetails.getRegistration() + "로 가입된 아이디 입니다"));
             }
         } catch (Exception ex) {

@@ -76,12 +76,14 @@ public class OAuth2SuccessHandler
             request.getSession().setAttribute("email", email);
 
             String targetUrl =
-                    "http://localhost:8080/auth/val";
+                    "https://www.toucheeseapi.shop/auth/val";
+//                    "http://localhost:8080/auth/val"; //로컬
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
 
         }else{
             String targetUrl =
-                    "http://localhost:8080/auth/val?error=failregistration";
+                    "https://www.toucheeseapi.shop/auth/val?error=failregistration";
+//                    "http://localhost:8080/auth/val?error=failregistration";
             request.getSession().setAttribute("error", userRepository.findByEmail(email).get().getRegistration());
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
         };

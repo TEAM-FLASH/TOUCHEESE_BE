@@ -41,7 +41,8 @@ public class WebSecurityConfig {
                                 "/studio/**",
                                 "/auth/**",
                                 "/token/**",
-                                "/user/auth/kakao/callback"
+                                "/user/auth/kakao/callback",
+                                "/login/oauth2/code/kakao"
                         ).permitAll()
                         .requestMatchers(
                                 "/auth/my-profile",
@@ -51,12 +52,12 @@ public class WebSecurityConfig {
                                 "/auth/register"
                         ).anonymous()
         )
-                .oauth2Login(oauth2Login -> oauth2Login
-                        .loginPage("/auth/login")
-                        .successHandler(oAuth2SuccessHandler)
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(oAuth2UserService))
-                )
+//                .oauth2Login(oauth2Login -> oauth2Login
+//                        .loginPage("/auth/login")
+//                        .successHandler(oAuth2SuccessHandler)
+//                        .userInfoEndpoint(userInfo -> userInfo
+//                                .userService(oAuth2UserService))
+//                )
                 //로그인
 //                .formLogin(formLogin -> formLogin.loginPage("/users/login")
 //                        .defaultSuccessUrl("/users/my-profile")

@@ -47,10 +47,12 @@ public class OAuth2RedirectController {
             //회원가입이 되어있지 않으면 회원가입
             if (!userRepository.existsByEmail(userInfo.get("email").toString())) {
                 RegisterDto registerDto = new RegisterDto();
-                registerDto.setEmail(userInfo.get("email").toString());
-                registerDto.setUsername(userInfo.get("name").toString());
-                registerDto.setRegistration("kakao");
-                return ResponseEntity.status(404).body(Map.of(registerDto, "가입되지 않은 이메일 입니다"));
+                registerDto.setStatus("가입되지 않은 이메일 입니다");
+                registerDto.setR_email(userInfo.get("email").toString());
+                registerDto.setR_username(userInfo.get("name").toString());
+                registerDto.setR_registration("kakao");
+                registerDto.setR_password(kakaoApi.makePassword());
+                return ResponseEntity.status(404).body(registerDto);
             } else {
                 //가입이 되어 있다면 회원 정보 불러오기
                 Optional<UserEntity> user = userRepository.findByEmail(userInfo.get("email").toString());

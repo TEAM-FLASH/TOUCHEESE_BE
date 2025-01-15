@@ -1,7 +1,9 @@
 package com.team4.toucheese.auth.jwt;
 
+import com.team4.toucheese.auth.dto.CreateUserDto;
 import com.team4.toucheese.auth.dto.LoginDto;
 import com.team4.toucheese.auth.dto.LoginSuccessDto;
+import com.team4.toucheese.auth.dto.RegisterDto;
 import com.team4.toucheese.auth.service.JpaUserDetailsManager;
 import com.team4.toucheese.user.entity.UserEntity;
 import com.team4.toucheese.user.repository.UserRepository;
@@ -82,6 +84,31 @@ public class JwtController {
             return ResponseEntity.ok(dto);
         }
         return ResponseEntity.status(401).body("No token found in session!");
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(
+            @RequestBody CreateUserDto userDto
+    ){
+        try{
+            String username = userDto.getUserName();
+            String email = userDto.getEmail();
+            String password = userDto.getPassword();
+            String registration = userDto.getRegistration();
+            String phone = userDto.getPhone();
+            userDetailsManager.createUser(email, password, password, phone, registration, username);
+            return ResponseEntity.ok("회원가입 완료");
+        }catch (Exception e){
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/register/check")
+    public ResponseEntity<?> checkEmail(String email){
+        if (userRepository.existsByEmail(email)) {
+            return ResponseEntity.status(401).body("이미 존재하는 이메일 입니다");
+        }
+        return ResponseEntity.ok("사용가능한 이메일 입니다");
     }
 
 }

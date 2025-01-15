@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -132,6 +133,23 @@ public class KakaoApi {
             e.printStackTrace();
         }
         return userInfo;
+    }
+
+    public String makePassword(){
+        // 사용할 문자 모음: 대문자, 소문자, 숫자, 특수문자
+        String charSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+        StringBuilder password = new StringBuilder();
+        SecureRandom random = new SecureRandom();
+
+        // 비밀번호 길이 설정 (예: 12자리)
+        int passwordLength = 12;
+
+        for (int i = 0; i < passwordLength; i++) {
+            int randomIndex = random.nextInt(charSet.length());
+            password.append(charSet.charAt(randomIndex));
+        }
+
+        return password.toString();
     }
 
 //    public ResponseEntity<?> registerUser(Map<String, Object> userInfo) {

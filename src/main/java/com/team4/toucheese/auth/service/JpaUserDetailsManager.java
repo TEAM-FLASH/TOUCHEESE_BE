@@ -60,16 +60,18 @@ public class JpaUserDetailsManager implements UserDetailsService {
         return CustomUserDetails.fromEntity(optionalUser.get());
     }
 
-    public void createUser(String username, String password, String passwordCheck) {
-        if (userExists(username)) throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
+    public void createUser(String email, String password, String passwordCheck, String phone, String registration, String username) {
+        if (userExists(email)) throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
         if (!password.equals(passwordCheck)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Passwords do not match");
 
         try{
             UserEntity newUser = UserEntity.builder()
-                    .email(username)
+                    .email(email)
+                    .phone(phone)
+                    .username(username)
                     .password(passwordEncoder.encode(password))
                     .role("ROLE_USER,USER")
-                    .registration("EMAIL")
+                    .registration(registration)
                     .build();
 
             userRepository.save(newUser);

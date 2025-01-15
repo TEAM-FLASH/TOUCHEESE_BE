@@ -49,7 +49,8 @@ public class WebSecurityConfig {
                                 "/auth/logout"
                         ).authenticated()
                         .requestMatchers(
-                                "/auth/register"
+                                "/auth/register",
+                                "/auth/register/check"
                         ).anonymous()
         )
 //                .oauth2Login(oauth2Login -> oauth2Login

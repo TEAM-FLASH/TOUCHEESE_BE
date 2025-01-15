@@ -104,7 +104,7 @@ public class JwtController {
     }
 
     @PostMapping("/register/check")
-    public ResponseEntity<?> checkEmail(String email){
+    public ResponseEntity<?> checkEmail(@RequestParam("email") String email){
         if (userRepository.existsByEmail(email)) {
             return ResponseEntity.status(401).body("이미 존재하는 이메일 입니다");
         }

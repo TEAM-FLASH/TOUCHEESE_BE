@@ -1,5 +1,6 @@
 package com.team4.toucheese.studio.controller;
 
+import com.team4.toucheese.studio.dto.AvailableTimeResultDto;
 import com.team4.toucheese.studio.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +22,12 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @GetMapping("/time")
-    public ResponseEntity<Map<String, Object>> getAvailableReservationTime(
+    public ResponseEntity<AvailableTimeResultDto> getAvailableReservationTime(
             @RequestParam("studioId") Long studioId,
             @RequestParam("date") LocalDate date,
             @RequestParam("duration") Integer duration
     ){
-        Map<String, Object> result =  reservationService.getAvailableTime(date, studioId, duration);
+        AvailableTimeResultDto result =  reservationService.getAvailableTime(date, studioId, duration);
         System.out.println(result);
 
         return ResponseEntity.ok(result);

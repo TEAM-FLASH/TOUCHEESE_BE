@@ -9,7 +9,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AvailableTimeWithDateDto {
-    private String date;
-    private List<AvailableTimeDto> availableTimeDto;
+public class AvailableTimeResultDto {
+    List<AvailableTimeWithDateDto> availableTimeWithDates;
+    List<String> disableDates;
 }

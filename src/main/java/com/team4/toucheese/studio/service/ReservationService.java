@@ -1,5 +1,8 @@
 package com.team4.toucheese.studio.service;
 
+import com.team4.toucheese.studio.dto.AvailableTimeDto;
+import com.team4.toucheese.studio.dto.AvailableTimeResultDto;
+import com.team4.toucheese.studio.dto.AvailableTimeWithDateDto;
 import com.team4.toucheese.studio.entity.Reservation;
 import com.team4.toucheese.studio.entity.StudioHoliday;
 import com.team4.toucheese.studio.entity.StudioOpeningHours;
@@ -27,7 +30,7 @@ public class ReservationService {
     private final StudioSpecialHolidayRepository studioSpecialHolidayRepository;
     private final StudioOpeningHoursRepository studioOpeningHoursRepository;
 
-    public Map<String, Object> getAvailableTime(LocalDate date, Long studioId, Integer duration){
+    public AvailableTimeResultDto getAvailableTime(LocalDate date, Long studioId, Integer duration){
 
         int year = date.getYear();
         int month = date.getMonthValue();
@@ -50,12 +53,12 @@ public class ReservationService {
         List<StudioSpecialHoliday> specialHolidays = studioSpecialHolidayRepository.findSpecialHolidaysForStudio(studioId, year, month);
 
         //3. 결과를 저장할 리스트
-        List<Map<String, Object>> availableDates = new ArrayList<>();
+        List<AvailableTimeWithDateDto> availableDates = new ArrayList<>();
         List<String> disableDates = new ArrayList<>();
 
         // 4. 확대된 날짜 범위 반복
         for (LocalDate currentDate = startOfCalendar; currentDate.isBefore(endOfCalendar.plusDays(1)); currentDate = currentDate.plusDays(1)) {
-            Map<String, Object> dailySlot = new HashMap<>();
+            AvailableTimeWithDateDto dailySlot = new AvailableTimeWithDateDto();
 
             // 4-1. 휴무일인지 확인
             if (isHoliday(currentDate, holidays, specialHolidays)) {
@@ -76,7 +79,7 @@ public class ReservationService {
             }
 
             // 4-3. 하루의 예약 가능한 시간 계산
-            Map<String, Boolean> timeSlots = calculateAvailableTimes(
+            List<AvailableTimeDto> timeSlots = calculateAvailableTimes(
                     currentDate, reservations,
                     dayHours.getOpenTime().toLocalTime(),
                     dayHours.getCloseTime().toLocalTime(),
@@ -90,16 +93,16 @@ public class ReservationService {
             }
 
             // 4-4. 날짜와 시간 상태 저장
-            dailySlot.put("availableDate", currentDate.toString()); // 예: "2025-01-01"
-            dailySlot.put("time", timeSlots); // 시간 및 가능 여부 저장
+            dailySlot.setDate(currentDate.toString()); // 예: "2025-01-01"
+            dailySlot.setAvailableTimeDto(timeSlots); // 시간 및 가능 여부 저장
             availableDates.add(dailySlot);
         }
 
         // 5. 결과 반환
-        Map<String, Object> result = new HashMap<>();
-        result.put("availableDates", availableDates);
-        result.put("disableDates", disableDates); // 비활성 날짜
-        return result;
+        AvailableTimeResultDto resultDto = new AvailableTimeResultDto();
+        resultDto.setAvailableTimeWithDates(availableDates);
+        resultDto.setDisableDates(disableDates); // 비활성 날짜
+        return resultDto;
     }
 
     private boolean isHoliday(LocalDate date, List<StudioHoliday> holidays, List<StudioSpecialHoliday> specialHolidays){
@@ -121,13 +124,15 @@ public class ReservationService {
         return false;
     }
 
-    private Map<String, Boolean> calculateAvailableTimes(LocalDate date, List<Reservation> reservations,
-                                                    LocalTime openTime, LocalTime closeTime, int duration) {
-        Map<String, Boolean> availableTimes = new LinkedHashMap<>();
+    private List<AvailableTimeDto> calculateAvailableTimes(LocalDate date, List<Reservation> reservations,
+                                                     LocalTime openTime, LocalTime closeTime, int duration) {
+
+        List<AvailableTimeDto> availableTimelist = new ArrayList<>();
         LocalTime currentTime = openTime;
 
         while (currentTime.plusMinutes(duration).isBefore(closeTime) || currentTime.plusMinutes(duration).equals(closeTime)) {
             LocalTime endTime = currentTime.plusMinutes(duration);
+            AvailableTimeDto availableTimes = new AvailableTimeDto();
 
             //예약 중복 여부 확인
             LocalTime finalCurrentTime = currentTime;
@@ -140,11 +145,13 @@ public class ReservationService {
             );
 
             //결과 저장
-            availableTimes.put(currentTime.toString(), isAvailable);
+            availableTimes.setTime(currentTime.toString());
+            availableTimes.setAvailable(isAvailable);
+            availableTimelist.add(availableTimes);
             currentTime = currentTime.plusMinutes(30);
         }
 
-        return availableTimes;
+        return availableTimelist;
     }
 
     public int calculateWeekOfMonth(LocalDate date) {

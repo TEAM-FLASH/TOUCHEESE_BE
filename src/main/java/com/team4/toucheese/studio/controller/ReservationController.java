@@ -1,13 +1,12 @@
 package com.team4.toucheese.studio.controller;
 
 import com.team4.toucheese.studio.dto.AvailableTimeResultDto;
+import com.team4.toucheese.studio.dto.ReservationRequest;
 import com.team4.toucheese.studio.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -39,4 +38,13 @@ public class ReservationController {
 
 
     }
+
+//    @PostMapping("")
+//    public ResponseEntity<?> doReservation(
+//            @RequestBody ReservationRequest reservationRequest,
+//            Authentication authentication
+//            ){
+//        reservationService.makeReservation(reservationRequest);
+//        return ResponseEntity.ok("ok");
+//    }
 }

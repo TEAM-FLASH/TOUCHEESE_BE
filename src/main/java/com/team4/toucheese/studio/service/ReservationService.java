@@ -3,6 +3,7 @@ package com.team4.toucheese.studio.service;
 import com.team4.toucheese.studio.dto.AvailableTimeDto;
 import com.team4.toucheese.studio.dto.AvailableTimeResultDto;
 import com.team4.toucheese.studio.dto.AvailableTimeWithDateDto;
+import com.team4.toucheese.studio.dto.ReservationRequest;
 import com.team4.toucheese.studio.entity.Reservation;
 import com.team4.toucheese.studio.entity.StudioHoliday;
 import com.team4.toucheese.studio.entity.StudioOpeningHours;
@@ -160,6 +161,11 @@ public class ReservationService {
         // 입력 날짜까지 몇 주가 지났는지 계산
         int weekOfMonth = (int) ChronoUnit.WEEKS.between(firstSundayOfMonth, date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY))) + 1;
         return weekOfMonth;
+    }
+
+
+    public void makeReservation(ReservationRequest reservationRequest){
+        Reservation reservation = new Reservation();
     }
 
 

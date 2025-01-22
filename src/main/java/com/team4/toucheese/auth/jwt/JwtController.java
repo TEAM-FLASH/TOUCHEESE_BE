@@ -101,13 +101,13 @@ public class JwtController {
     }
 
     @PostMapping("/register/check")
-    public ResponseEntity<?> checkEmail(@RequestParam("email") String email){
+    public ResponseEntity<?> checkEmail(@RequestParam("email") String email) {
         CheckMailDto dto = new CheckMailDto();
         if (userRepository.existsByEmail(email)) {
-            dto.setSuccess(true);
-            return ResponseEntity.ok(dto);
+            dto.setSuccess(false);
+            return ResponseEntity.status(400).body(dto);
         }
-        return ResponseEntity.status(200).body(dto);
+        dto.setSuccess(true);
+        return ResponseEntity.ok(200);
     }
-
 }

@@ -29,7 +29,7 @@ spring:
             # REST API키
             client-id: ${KAKAO_CLIENT_ID}
             client-secret: ${KAKAO_CLIENT_SECRET}
-            redirect-uri: https://toucheese.store/user/auth/kakao/callback
+            redirect-uri: http://localhost:5173/user/auth/kakao/callback
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post
             client-name: Kakao

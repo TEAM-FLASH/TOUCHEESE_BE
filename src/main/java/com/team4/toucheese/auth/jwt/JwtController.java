@@ -108,6 +108,6 @@ public class JwtController {
             return ResponseEntity.status(400).body(dto);
         }
         dto.setSuccess(true);
-        return ResponseEntity.ok(200);
+        return ResponseEntity.ok(dto);
     }
 }

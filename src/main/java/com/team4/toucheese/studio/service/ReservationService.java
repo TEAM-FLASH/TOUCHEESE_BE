@@ -171,7 +171,6 @@ public class ReservationService {
         Optional<Studio> studio = studioRepository.findById(reservationRequest.getStudioId());
         Optional<Menu> menu = menuRepository.findById(reservationRequest.getMenuId());
         List<AdditionalOption> additionalOptions = additionalOptionRepository.findAllById(reservationRequest.getAdditionalOptionIds());
-
         if (user.isEmpty() || studio.isEmpty()) {
             return;
         }else {
@@ -179,6 +178,11 @@ public class ReservationService {
             reservation.toBuilder()
                     .user_id(userId)
                     .studio(studio.get())
+                    .additionalOptions(additionalOptions)
+                    .menu(menu.get())
+                    .date(reservationRequest.getDate())
+                    .start_time(reservationRequest.getStartTime())
+                    .note(reservationRequest.getNote())
                     .build();
         }
 

@@ -51,7 +51,7 @@ public class ReservationController {
         if (authentication != null) {
             userEmail = authentication.getName();
         }
-        reservationService.makeReservation(reservationRequest, userEmail);
+//        reservationService.makeReservation(reservationRequest, userEmail);
         return ResponseEntity.ok(reservationRequest);
     }
 }

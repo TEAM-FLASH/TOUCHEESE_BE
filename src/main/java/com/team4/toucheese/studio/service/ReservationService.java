@@ -14,6 +14,7 @@ import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.sql.Time;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
@@ -166,7 +167,7 @@ public class ReservationService {
         return weekOfMonth;
     }
 
-
+    @Transactional
     public void makeReservation(ReservationRequest reservationRequest, String userEmail){
         System.out.println("userEmail = " + userEmail);
         Optional<UserEntity> user = userRepository.findByEmail(userEmail);
@@ -227,6 +228,26 @@ public class ReservationService {
                 .totalPrice(reservationRequest.getTotalPrice())
                 .build();
         reservationRepository.save(makeReservation);
+    }
+
+    //이용완료
+    @Transactional
+    public void completeReservation(){
+        //reservation 테이블의 데이터를 completeReservation 테이블로 옮긴다.
+
+        //completeReservation 저장
+
+        //reservation 데이터 삭제
+
+    }
+    //예약 취소
+    @Transactional
+    public void cancelReservation(){
+        //reservation 테이블의 데이터를 cancelReservation 테이블로 옮긴다.
+
+        //cancelReservation 저장
+
+        //reservation 데이터 삭제
     }
 
 }

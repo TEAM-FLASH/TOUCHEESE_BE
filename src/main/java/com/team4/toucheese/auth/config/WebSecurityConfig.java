@@ -48,7 +48,10 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 "/auth/my-profile",
                                 "/auth/logout",
-                                "/user/mypage"
+                                "/user/mypage",
+                                "/user/bookmark/",
+                                "/user/bookmark/delete/",
+                                "/user/mypage/**"
                         ).authenticated()
                         .requestMatchers(
                                 "/auth/register",

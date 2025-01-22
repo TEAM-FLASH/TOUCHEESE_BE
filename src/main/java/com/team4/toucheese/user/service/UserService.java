@@ -92,10 +92,56 @@ public class UserService {
                 dto.setMenuId(reservation.getMenu().getId());
                 dto.setMenuName(reservation.getMenu().getName());
                 dto.setDate(reservation.getDate());
+                dto.setStartTime(reservation.getStart_time());
                 dto.setMenuImgUrl(reservation.getMenu().getMenuImages().get(0).getUrl());
                 dtos.add(dto);
             }
         }
         return dtos;
     }
+
+    //이용예정 목록
+    public List<MyInfoDto> getMyReservation(Authentication authentication){
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String email = userDetails.getEmail();
+//        System.out.println("email = " + email);
+        if (email == null){
+            throw new IllegalArgumentException("email is null");
+        }
+        Optional<UserEntity> user = userRepository.findByEmail(email);
+        if (user.isEmpty()){
+            throw new IllegalArgumentException("user is null");
+        }
+        Long userId = user.get().getId();
+        List<Reservation> reservations = reservationRepository.findByUser(userId);
+        List<MyInfoDto> dtos = new ArrayList<>();
+        if (reservations.isEmpty()){
+            throw new IllegalArgumentException("reservation is null");
+        }
+        for (Reservation reservation : reservations){
+            MyInfoDto dto = new MyInfoDto();
+            dto.setStatus(reservation.getStatus().toString());
+            dto.setStudioId(reservation.getStudio().getId());
+            dto.setStudioName(reservation.getStudio().getName());
+            dto.setMenuId(reservation.getMenu().getId());
+            dto.setMenuName(reservation.getMenu().getName());
+            dto.setDate(reservation.getDate());
+            dto.setStartTime(reservation.getStart_time());
+            dto.setMenuImgUrl(reservation.getMenu().getMenuImages().get(0).getUrl());
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+    //이용완료 목록
+
+    //예약취소 목록
+
+    //예약 상세
+
+    //예약 취소 신청
+
+
+    //핸드폰 번호 변경
+
+    //비밀번호 변경
 }

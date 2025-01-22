@@ -45,4 +45,14 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @GetMapping("/mypage/reservation")
+    public ResponseEntity<?> myReservation(Authentication authentication){
+        try{
+            List<MyInfoDto> myInfoDtos = userService.getMyReservation(authentication);
+            return ResponseEntity.ok(myInfoDtos);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

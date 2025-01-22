@@ -105,7 +105,7 @@ public class JwtController {
         CheckMailDto dto = new CheckMailDto();
         if (userRepository.existsByEmail(email)) {
             dto.setSuccess(false);
-            return ResponseEntity.status(400).body(dto);
+            return ResponseEntity.ok(dto);
         }
         dto.setSuccess(true);
         return ResponseEntity.ok(dto);

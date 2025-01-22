@@ -39,14 +39,19 @@ public class ReservationController {
 
     }
 
-    @PostMapping("")
+    @PostMapping("/action")
     public ResponseEntity<?> doReservation(
             @RequestBody ReservationRequest reservationRequest,
             Authentication authentication
             ){
         //예약하기
-        authentication.getName();
-        reservationService.makeReservation(reservationRequest);
-        return ResponseEntity.ok("ok");
+        System.out.println("reservationRequest = " + reservationRequest);
+        System.out.println("authentication = " + authentication);
+        String userEmail = null;
+        if (authentication != null) {
+            userEmail = authentication.getName();
+        }
+        reservationService.makeReservation(reservationRequest, userEmail);
+        return ResponseEntity.ok(reservationRequest);
     }
 }

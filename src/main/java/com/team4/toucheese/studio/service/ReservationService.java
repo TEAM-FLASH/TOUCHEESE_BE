@@ -4,16 +4,13 @@ import com.team4.toucheese.studio.dto.AvailableTimeDto;
 import com.team4.toucheese.studio.dto.AvailableTimeResultDto;
 import com.team4.toucheese.studio.dto.AvailableTimeWithDateDto;
 import com.team4.toucheese.studio.dto.ReservationRequest;
-import com.team4.toucheese.studio.entity.Reservation;
-import com.team4.toucheese.studio.entity.StudioHoliday;
-import com.team4.toucheese.studio.entity.StudioOpeningHours;
-import com.team4.toucheese.studio.entity.StudioSpecialHoliday;
-import com.team4.toucheese.studio.repository.ReservationRepository;
-import com.team4.toucheese.studio.repository.StudioHolidayRepository;
-import com.team4.toucheese.studio.repository.StudioOpeningHoursRepository;
-import com.team4.toucheese.studio.repository.StudioSpecialHolidayRepository;
+import com.team4.toucheese.studio.entity.*;
+import com.team4.toucheese.studio.repository.*;
+import com.team4.toucheese.user.entity.UserEntity;
+import com.team4.toucheese.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
@@ -30,6 +27,10 @@ public class ReservationService {
     private final StudioHolidayRepository studioHolidayRepository;
     private final StudioSpecialHolidayRepository studioSpecialHolidayRepository;
     private final StudioOpeningHoursRepository studioOpeningHoursRepository;
+    private final UserRepository userRepository;
+    private final StudioRepository studioRepository;
+    private final MenuRepository menuRepository;
+    private final AdditionalOptionRepository additionalOptionRepository;
 
     public AvailableTimeResultDto getAvailableTime(LocalDate date, Long studioId, Integer duration){
 
@@ -164,8 +165,24 @@ public class ReservationService {
     }
 
 
-    public void makeReservation(ReservationRequest reservationRequest){
+    public void makeReservation(ReservationRequest reservationRequest, String userEmail){
         Reservation reservation = new Reservation();
+        Optional<UserEntity> user = userRepository.findByEmail(userEmail);
+        Optional<Studio> studio = studioRepository.findById(reservationRequest.getStudioId());
+        Optional<Menu> menu = menuRepository.findById(reservationRequest.getMenuId());
+        List<AdditionalOption> additionalOptions = additionalOptionRepository.findAllById(reservationRequest.getAdditionalOptionIds());
+
+        if (user.isEmpty() || studio.isEmpty()) {
+            return;
+        }else {
+            Long userId = user.get().getId();
+            reservation.toBuilder()
+                    .user_id(userId)
+                    .studio(studio.get())
+                    .build();
+        }
+
+
     }
 
 

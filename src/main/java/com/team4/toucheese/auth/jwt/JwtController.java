@@ -1,9 +1,6 @@
 package com.team4.toucheese.auth.jwt;
 
-import com.team4.toucheese.auth.dto.CreateUserDto;
-import com.team4.toucheese.auth.dto.LoginDto;
-import com.team4.toucheese.auth.dto.LoginSuccessDto;
-import com.team4.toucheese.auth.dto.RegisterDto;
+import com.team4.toucheese.auth.dto.*;
 import com.team4.toucheese.auth.service.JpaUserDetailsManager;
 import com.team4.toucheese.user.entity.UserEntity;
 import com.team4.toucheese.user.repository.UserRepository;
@@ -105,10 +102,12 @@ public class JwtController {
 
     @PostMapping("/register/check")
     public ResponseEntity<?> checkEmail(@RequestParam("email") String email){
+        CheckMailDto dto = new CheckMailDto();
         if (userRepository.existsByEmail(email)) {
-            return ResponseEntity.status(401).body("이미 존재하는 이메일 입니다");
+            dto.setSuccess(true);
+            return ResponseEntity.ok(dto);
         }
-        return ResponseEntity.ok("사용가능한 이메일 입니다");
+        return ResponseEntity.status(200).body(dto);
     }
 
 }

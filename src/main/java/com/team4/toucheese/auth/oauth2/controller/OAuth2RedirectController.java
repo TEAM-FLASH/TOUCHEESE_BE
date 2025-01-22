@@ -49,7 +49,7 @@ public class OAuth2RedirectController {
                 RegisterDto registerDto = new RegisterDto();
                 registerDto.setStatus("가입되지 않은 이메일 입니다");
                 registerDto.setR_email(userInfo.get("email").toString());
-                registerDto.setR_username(userInfo.get("name").toString());
+//                registerDto.setR_username(userInfo.get("name").toString());
                 registerDto.setR_registration("kakao");
                 registerDto.setR_password(kakaoApi.makePassword());
                 return ResponseEntity.status(404).body(registerDto);

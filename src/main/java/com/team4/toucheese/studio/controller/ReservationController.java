@@ -39,12 +39,14 @@ public class ReservationController {
 
     }
 
-//    @PostMapping("")
-//    public ResponseEntity<?> doReservation(
-//            @RequestBody ReservationRequest reservationRequest,
-//            Authentication authentication
-//            ){
-//        reservationService.makeReservation(reservationRequest);
-//        return ResponseEntity.ok("ok");
-//    }
+    @PostMapping("")
+    public ResponseEntity<?> doReservation(
+            @RequestBody ReservationRequest reservationRequest,
+            Authentication authentication
+            ){
+        //예약하기
+        authentication.getName();
+        reservationService.makeReservation(reservationRequest);
+        return ResponseEntity.ok("ok");
+    }
 }

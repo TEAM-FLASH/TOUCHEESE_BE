@@ -38,7 +38,8 @@ public class UserController {
     @GetMapping("/mypage")
     public ResponseEntity<?> myPage(Authentication authentication){
         try{
-            List<MyInfoDto> myInfoDtos = userService.getMyInfo(authentication.getName());
+            System.out.println("authentication = " + authentication.getPrincipal());
+            List<MyInfoDto> myInfoDtos = userService.getMyInfo(authentication);
             return ResponseEntity.ok(myInfoDtos);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

@@ -47,7 +47,8 @@ public class WebSecurityConfig {
                         ).permitAll()
                         .requestMatchers(
                                 "/auth/my-profile",
-                                "/auth/logout"
+                                "/auth/logout",
+                                "/user/mypage"
                         ).authenticated()
                         .requestMatchers(
                                 "/auth/register",

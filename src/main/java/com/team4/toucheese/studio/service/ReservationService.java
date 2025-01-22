@@ -10,6 +10,7 @@ import com.team4.toucheese.user.entity.UserEntity;
 import com.team4.toucheese.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -167,46 +168,65 @@ public class ReservationService {
 
 
     public void makeReservation(ReservationRequest reservationRequest, String userEmail){
-        Reservation reservation = new Reservation();
+        System.out.println("userEmail = " + userEmail);
         Optional<UserEntity> user = userRepository.findByEmail(userEmail);
         Optional<Studio> studio = studioRepository.findById(reservationRequest.getStudioId());
         Optional<Menu> menu = menuRepository.findById(reservationRequest.getMenuId());
         List<AdditionalOption> additionalOptions = additionalOptionRepository.findAllById(reservationRequest.getAdditionalOptionIds());
-        if (user.isEmpty() || studio.isEmpty() || menu.isEmpty() || additionalOptions.isEmpty()) {
-            throw new IllegalArgumentException("User or Studio not found.");
-        }else {
-            //예약정보 DB에 저장
-            Long userId = user.get().getId();
-            LocalTime totalTime = null;
-            for (AdditionalOption additionalOption : additionalOptions) {
-                LocalTime times = additionalOption.getDuration().toLocalTime();
-                if (times != null) {
-                    totalTime = totalTime.plusMinutes(times.getHour() * 60 + times.getMinute());
-                }
-            }
-            LocalTime endTime = menu.get().getDuration().toLocalTime().plusMinutes(totalTime.getMinute());
-//            LocalTime endTime = reservationRequest.getStartTime().plusMinutes(menu.get().getDuration().getTime()).plusMinutes()
-            reservation.toBuilder()
-                    .user_id(userId)
-                    .studio(studio.get())
-                    .additionalOptions(additionalOptions)
-                    .menu(menu.get())
-                    .date(reservationRequest.getDate())
-                    .start_time(reservationRequest.getStartTime())
-                    .end_time(endTime)
-                    .note(reservationRequest.getNote())
-                    .status(Reservation.ReservationStatus.valueOf("WAITING"))
-                    .paymentMethod(reservationRequest.getPaymentMethod())
-                    .visitingCustomerName(reservationRequest.getVisitingCustomerName())
-                    .visitingCustomerPhone(reservationRequest.getVisitingCustomerPhone())
-                    .impUid(reservationRequest.getImpUid())
-                    .merchantUid(reservationRequest.getMerchantUid())
-                    .totalPrice(reservationRequest.getTotalPrice())
-                    .build();
-            reservationRepository.save(reservation);
+        // 유효성 검증
+        if (user.isEmpty()) {
+            throw new IllegalArgumentException("User not found.");
         }
-
+        if (studio.isEmpty()) {
+            throw new IllegalArgumentException("Studio not found.");
+        }
+        if (menu.isEmpty()) {
+            throw new IllegalArgumentException("Menu not found.");
+        }
+        if (additionalOptions.isEmpty()) {
+            throw new IllegalArgumentException("Additional options not found.");
+        }
+//        List<Long> additionalOptionIds = additionalOptions.stream().map(AdditionalOption::getId).toList();
+        //예약정보 DB에 저장
+        Long userId = user.get().getId();
+        LocalTime totalTime = LocalTime.of(0, 0);
+        for (AdditionalOption additionalOption : additionalOptions) {
+            Time time = additionalOption.getDuration();
+            if (time != null) {
+                LocalTime times = additionalOption.getDuration().toLocalTime();
+                totalTime = totalTime.plusMinutes(times.getHour() * 60 + times.getMinute());
+            }else {
+                //time is null
+                LocalTime times = LocalTime.of(0, 0);
+                totalTime = totalTime.plusMinutes(times.getHour() * 60 + times.getMinute());
+                System.out.println("AdditionalOption duration is null for option: " + additionalOption);
+            }
+        }
+        // 종료 시간 계산
+        LocalTime endTime = LocalTime.of(0, 0);
+        if (menu.get().getDuration() != null) {
+            endTime = menu.get().getDuration().toLocalTime().plusMinutes(totalTime.getMinute());
+        } else {
+            throw new IllegalArgumentException("Menu duration not found."); // 안전장치
+        }
+        Reservation makeReservation = Reservation.builder()
+                .user_id(userId)
+                .studio(studio.get())
+                .additionalOptionIds(reservationRequest.getAdditionalOptionIds())
+                .menu(menu.get())
+                .date(reservationRequest.getDate())
+                .start_time(reservationRequest.getStartTime())
+                .end_time(reservationRequest.getStartTime().plusMinutes(endTime.getMinute()))
+                .note(reservationRequest.getNote())
+                .status(Reservation.ReservationStatus.valueOf("WAITING"))
+                .paymentMethod(reservationRequest.getPaymentMethod())
+                .visitingCustomerName(reservationRequest.getVisitingCustomerName())
+                .visitingCustomerPhone(reservationRequest.getVisitingCustomerPhone())
+                .impUid(reservationRequest.getImpUid())
+                .merchantUid(reservationRequest.getMerchantUid())
+                .totalPrice(reservationRequest.getTotalPrice())
+                .build();
+        reservationRepository.save(makeReservation);
     }
-
 
 }

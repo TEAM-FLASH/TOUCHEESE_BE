@@ -38,8 +38,8 @@ public class Reservation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Menu menu;
-    @ManyToMany(fetch = FetchType.LAZY)
-    private List<AdditionalOption> additionalOptions;
+    @ElementCollection(fetch = FetchType.LAZY)
+    private List<Long> additionalOptionIds;
 
     private String visitingCustomerName;
     private String visitingCustomerPhone;

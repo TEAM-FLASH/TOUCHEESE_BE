@@ -1,5 +1,6 @@
 package com.team4.toucheese.user.service;
 
+import com.team4.toucheese.auth.dto.CustomUserDetails;
 import com.team4.toucheese.studio.entity.Reservation;
 import com.team4.toucheese.studio.entity.Studio;
 import com.team4.toucheese.studio.repository.ReservationRepository;
@@ -12,6 +13,7 @@ import com.team4.toucheese.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -64,7 +66,10 @@ public class UserService {
         return bookMarkRepository.findByUserIdAndStudioId(userId, studioId).isPresent();
     }
 
-    public List<MyInfoDto> getMyInfo(String email){
+    public List<MyInfoDto> getMyInfo(Authentication authentication){
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String email = userDetails.getEmail();
+//        System.out.println("email = " + email);
         if (email == null){
             throw new IllegalArgumentException("email is null");
         }

@@ -73,7 +73,7 @@ public class UserService {
             throw new IllegalArgumentException("user is null");
         }
         Long userId = user.get().getId();
-        List<Reservation> reservations = reservationRepository.findByUserId(userId);
+        List<Reservation> reservations = reservationRepository.findByUser(userId);
         List<MyInfoDto> dtos = new ArrayList<>();
         if (reservations.isEmpty()){
             throw new IllegalArgumentException("reservation is null");

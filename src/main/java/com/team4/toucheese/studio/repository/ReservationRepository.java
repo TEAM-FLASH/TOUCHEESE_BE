@@ -13,5 +13,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
                                                 @Param("year") int year,
                                                 @Param("month") int month);
 
-    List<Reservation> findByUserId(Long userId);
+    @Query("SELECT r FROM Reservation r WHERE r.user_id = :id")
+    List<Reservation> findByUser(Long id);
 }

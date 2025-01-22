@@ -1,10 +1,14 @@
 package com.team4.toucheese.user.controller;
 
+import com.team4.toucheese.user.dto.MyInfoDto;
 import com.team4.toucheese.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -26,6 +30,16 @@ public class UserController {
         try{
             userService.deleteBookMark(userId, studioId);
             return ResponseEntity.ok("success");
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/mypage")
+    public ResponseEntity<?> myPage(Authentication authentication){
+        try{
+            List<MyInfoDto> myInfoDtos = userService.getMyInfo(authentication.getName());
+            return ResponseEntity.ok(myInfoDtos);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

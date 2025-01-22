@@ -47,11 +47,16 @@ public class ReservationController {
         //예약하기
         System.out.println("reservationRequest = " + reservationRequest);
         System.out.println("authentication = " + authentication);
-        String userEmail = null;
+        String userEmail = "toucheese@gamil.com";
         if (authentication != null) {
             userEmail = authentication.getName();
         }
-//        reservationService.makeReservation(reservationRequest, userEmail);
-        return ResponseEntity.ok(reservationRequest);
+        try{
+            reservationService.makeReservation(reservationRequest, userEmail);
+            return ResponseEntity.ok().build();
+        }catch (Exception e){
+            ResponseEntity.status(500).body(e.getMessage());
+        }
+        return ResponseEntity.badRequest().build();
     }
 }

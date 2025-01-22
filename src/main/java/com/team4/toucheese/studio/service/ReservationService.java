@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.sql.Time;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
@@ -171,10 +172,20 @@ public class ReservationService {
         Optional<Studio> studio = studioRepository.findById(reservationRequest.getStudioId());
         Optional<Menu> menu = menuRepository.findById(reservationRequest.getMenuId());
         List<AdditionalOption> additionalOptions = additionalOptionRepository.findAllById(reservationRequest.getAdditionalOptionIds());
-        if (user.isEmpty() || studio.isEmpty()) {
-            return;
+        if (user.isEmpty() || studio.isEmpty() || menu.isEmpty() || additionalOptions.isEmpty()) {
+            throw new IllegalArgumentException("User or Studio not found.");
         }else {
+            //예약정보 DB에 저장
             Long userId = user.get().getId();
+            LocalTime totalTime = null;
+            for (AdditionalOption additionalOption : additionalOptions) {
+                LocalTime times = additionalOption.getDuration().toLocalTime();
+                if (times != null) {
+                    totalTime = totalTime.plusMinutes(times.getHour() * 60 + times.getMinute());
+                }
+            }
+            LocalTime endTime = menu.get().getDuration().toLocalTime().plusMinutes(totalTime.getMinute());
+//            LocalTime endTime = reservationRequest.getStartTime().plusMinutes(menu.get().getDuration().getTime()).plusMinutes()
             reservation.toBuilder()
                     .user_id(userId)
                     .studio(studio.get())
@@ -182,10 +193,18 @@ public class ReservationService {
                     .menu(menu.get())
                     .date(reservationRequest.getDate())
                     .start_time(reservationRequest.getStartTime())
+                    .end_time(endTime)
                     .note(reservationRequest.getNote())
+                    .status(Reservation.ReservationStatus.valueOf("WAITING"))
+                    .paymentMethod(reservationRequest.getPaymentMethod())
+                    .visitingCustomerName(reservationRequest.getVisitingCustomerName())
+                    .visitingCustomerPhone(reservationRequest.getVisitingCustomerPhone())
+                    .impUid(reservationRequest.getImpUid())
+                    .merchantUid(reservationRequest.getMerchantUid())
+                    .totalPrice(reservationRequest.getTotalPrice())
                     .build();
+            reservationRepository.save(reservation);
         }
-
 
     }
 

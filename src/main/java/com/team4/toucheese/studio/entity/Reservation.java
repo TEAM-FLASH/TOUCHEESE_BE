@@ -52,6 +52,6 @@ public class Reservation {
 
     public enum ReservationStatus {
         RESERVED,
-        COMPLETED
+        WAITING
     }
 }

@@ -1,14 +1,22 @@
 package com.team4.toucheese.user.service;
 
+import com.team4.toucheese.studio.entity.Reservation;
 import com.team4.toucheese.studio.entity.Studio;
+import com.team4.toucheese.studio.repository.ReservationRepository;
 import com.team4.toucheese.studio.repository.StudioRepository;
+import com.team4.toucheese.user.dto.MyInfoDto;
 import com.team4.toucheese.user.entity.BookMark;
+import com.team4.toucheese.user.entity.UserEntity;
 import com.team4.toucheese.user.repository.BookMarkRepository;
 import com.team4.toucheese.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -17,6 +25,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final BookMarkRepository bookMarkRepository;
     private final StudioRepository studioRepository;
+    private final ReservationRepository reservationRepository;
 
     @Transactional
     public void addBookMark(Long userId, Long studioId){
@@ -53,5 +62,35 @@ public class UserService {
 
     public boolean checkBookMark(Long userId, Long studioId){
         return bookMarkRepository.findByUserIdAndStudioId(userId, studioId).isPresent();
+    }
+
+    public List<MyInfoDto> getMyInfo(String email){
+        if (email == null){
+            throw new IllegalArgumentException("email is null");
+        }
+        Optional<UserEntity> user = userRepository.findByEmail(email);
+        if (user.isEmpty()){
+            throw new IllegalArgumentException("user is null");
+        }
+        Long userId = user.get().getId();
+        List<Reservation> reservations = reservationRepository.findByUserId(userId);
+        List<MyInfoDto> dtos = new ArrayList<>();
+        if (reservations.isEmpty()){
+            throw new IllegalArgumentException("reservation is null");
+        }
+        for (Reservation reservation : reservations){
+            MyInfoDto dto = new MyInfoDto();
+            if (reservation.getStatus().toString().equals("RESERVED")){
+                dto.setStatus(reservation.getStatus().toString());
+                dto.setStudioId(reservation.getStudio().getId());
+                dto.setStudioName(reservation.getStudio().getName());
+                dto.setMenuId(reservation.getMenu().getId());
+                dto.setMenuName(reservation.getMenu().getName());
+                dto.setDate(reservation.getDate());
+                dto.setMenuImgUrl(reservation.getMenu().getMenuImages().get(0).getUrl());
+                dtos.add(dto);
+            }
+        }
+        return dtos;
     }
 }

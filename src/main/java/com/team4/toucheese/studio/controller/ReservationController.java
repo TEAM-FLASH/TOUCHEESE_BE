@@ -1,5 +1,6 @@
 package com.team4.toucheese.studio.controller;
 
+import com.team4.toucheese.auth.dto.CustomUserDetails;
 import com.team4.toucheese.studio.dto.AvailableTimeResultDto;
 import com.team4.toucheese.studio.dto.ReservationRequest;
 import com.team4.toucheese.studio.service.ReservationService;
@@ -49,7 +50,8 @@ public class ReservationController {
         System.out.println("authentication = " + authentication);
         String userEmail = "toucheese@gmail.com";
         if (authentication != null) {
-            userEmail = authentication.getName();
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            userEmail = userDetails.getEmail();
         }
         try{
             reservationService.makeReservation(reservationRequest, userEmail);

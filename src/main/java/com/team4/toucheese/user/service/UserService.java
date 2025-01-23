@@ -86,6 +86,7 @@ public class UserService {
         for (Reservation reservation : reservations){
             MyInfoDto dto = new MyInfoDto();
             if (reservation.getStatus().toString().equals("RESERVED")){
+                dto.setReservationId(reservation.getId());
                 dto.setStatus(reservation.getStatus().toString());
                 dto.setStudioId(reservation.getStudio().getId());
                 dto.setStudioName(reservation.getStudio().getName());
@@ -120,6 +121,7 @@ public class UserService {
         }
         for (Reservation reservation : reservations){
             MyInfoDto dto = new MyInfoDto();
+            dto.setReservationId(reservation.getId());
             dto.setStatus(reservation.getStatus().toString());
             dto.setStudioId(reservation.getStudio().getId());
             dto.setStudioName(reservation.getStudio().getName());

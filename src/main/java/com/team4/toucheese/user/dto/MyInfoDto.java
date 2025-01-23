@@ -12,6 +12,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MyInfoDto {
+    private Long reservationId;
     private Long studioId;
     private String studioName;
     private Long menuId;

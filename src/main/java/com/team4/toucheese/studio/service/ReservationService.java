@@ -232,8 +232,11 @@ public class ReservationService {
 
     //이용완료
     @Transactional
-    public void completeReservation(){
+    public void completeReservation(Long reservationId){
         //reservation 테이블의 데이터를 completeReservation 테이블로 옮긴다.
+        //1. Reservation 찾기
+        Optional<Reservation> reservation = reservationRepository.findById(reservationId);
+        //2. 데이터 옮기기
 
         //completeReservation 저장
 

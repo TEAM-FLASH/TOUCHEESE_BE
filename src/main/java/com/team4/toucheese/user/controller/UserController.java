@@ -37,7 +37,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/mypage")
+    @GetMapping("/mypage/reservation/reserved")
     public ResponseEntity<?> myPage(Authentication authentication){
         try{
             System.out.println("authentication = " + authentication.getPrincipal());

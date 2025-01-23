@@ -1,9 +1,6 @@
 package com.team4.toucheese.studio.service;
 
-import com.team4.toucheese.studio.dto.AvailableTimeDto;
-import com.team4.toucheese.studio.dto.AvailableTimeResultDto;
-import com.team4.toucheese.studio.dto.AvailableTimeWithDateDto;
-import com.team4.toucheese.studio.dto.ReservationRequest;
+import com.team4.toucheese.studio.dto.*;
 import com.team4.toucheese.studio.entity.*;
 import com.team4.toucheese.studio.repository.*;
 import com.team4.toucheese.user.entity.UserEntity;
@@ -34,6 +31,8 @@ public class ReservationService {
     private final StudioRepository studioRepository;
     private final MenuRepository menuRepository;
     private final AdditionalOptionRepository additionalOptionRepository;
+    private final CompleteReservationRepository completeReservationRepository;
+    private final CancelReservationRepository cancelReservationRepository;
 
     public AvailableTimeResultDto getAvailableTime(LocalDate date, Long studioId, Integer duration){
 
@@ -237,20 +236,65 @@ public class ReservationService {
         //1. Reservation 찾기
         Optional<Reservation> reservation = reservationRepository.findById(reservationId);
         //2. 데이터 옮기기
+        if (reservation.isEmpty()) {
+            throw new IllegalArgumentException("Reservation not found.");
+        }
+        if (reservation.get().getAdditionalOptionIds().isEmpty()) {
 
+        }
+        CompleteReservation completeReservation = CompleteReservation.builder()
+                .studio(reservation.get().getStudio())
+                .menu(reservation.get().getMenu())
+                .additionalOptionIds(reservation.get().getAdditionalOptionIds())
+                .date(reservation.get().getDate())
+                .start_time(reservation.get().getStart_time())
+                .end_time(reservation.get().getEnd_time())
+                .note(reservation.get().getNote())
+                .visitingCustomerName(reservation.get().getVisitingCustomerName())
+                .visitingCustomerPhone(reservation.get().getVisitingCustomerPhone())
+                .impUid(reservation.get().getImpUid())
+                .merchantUid(reservation.get().getMerchantUid())
+                .totalPrice(reservation.get().getTotalPrice())
+                .user_id(reservation.get().getUser_id())
+                .paymentMethod(reservation.get().getPaymentMethod())
+                .status("COMPLETE")
+                .build();
         //completeReservation 저장
-
+        completeReservationRepository.save(completeReservation);
         //reservation 데이터 삭제
-
+        reservationRepository.deleteById(reservationId);
     }
     //예약 취소
     @Transactional
-    public void cancelReservation(){
+    public void cancelReservation(Long reservationId){
         //reservation 테이블의 데이터를 cancelReservation 테이블로 옮긴다.
-
+        //1. Reservation 찾기
+        Optional<Reservation> reservation = reservationRepository.findById(reservationId);
+        //2. 데이터 옮기기
+        if (reservation.isEmpty()) {
+            throw new IllegalArgumentException("Reservation not found.");
+        }
+        CancelReservation cancelReservation = CancelReservation.builder()
+                .studio(reservation.get().getStudio())
+                .user_id(reservation.get().getUser_id())
+                .menu(reservation.get().getMenu())
+                .additionalOptionIds(reservation.get().getAdditionalOptionIds())
+                .date(reservation.get().getDate())
+                .start_time(reservation.get().getStart_time())
+                .end_time(reservation.get().getEnd_time())
+                .note(reservation.get().getNote())
+                .visitingCustomerName(reservation.get().getVisitingCustomerName())
+                .visitingCustomerPhone(reservation.get().getVisitingCustomerPhone())
+                .impUid(reservation.get().getImpUid())
+                .merchantUid(reservation.get().getMerchantUid())
+                .totalPrice(reservation.get().getTotalPrice())
+                .paymentMethod(reservation.get().getPaymentMethod())
+                .status("CANCEL")
+                .build();
         //cancelReservation 저장
-
+        cancelReservationRepository.save(cancelReservation);
         //reservation 데이터 삭제
+        reservationRepository.deleteById(reservationId);
     }
 
 }

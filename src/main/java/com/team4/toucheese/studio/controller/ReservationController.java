@@ -60,4 +60,24 @@ public class ReservationController {
             return ResponseEntity.status(500).body(e.getMessage());
         }
     }
+
+    @PostMapping("/complete/{reservationId}")
+    public ResponseEntity<?> completeReservation(@PathVariable("reservationId") Long reservationId){
+        try{
+            reservationService.completeReservation(reservationId);
+            return ResponseEntity.ok().build();
+        }catch (Exception e){
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/cancel/{reservationId}")
+    public ResponseEntity<?> cancelReservation(@PathVariable("reservationId") Long reservationId){
+        try{
+            reservationService.cancelReservation(reservationId);
+            return ResponseEntity.ok().build();
+        }catch (Exception e){
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
 }

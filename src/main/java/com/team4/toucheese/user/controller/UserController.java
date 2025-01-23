@@ -1,5 +1,7 @@
 package com.team4.toucheese.user.controller;
 
+import com.team4.toucheese.user.dto.MyCanceledInfo;
+import com.team4.toucheese.user.dto.MyCompletedInfo;
 import com.team4.toucheese.user.dto.MyInfoDto;
 import com.team4.toucheese.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +53,26 @@ public class UserController {
         try{
             List<MyInfoDto> myInfoDtos = userService.getMyReservation(authentication);
             return ResponseEntity.ok(myInfoDtos);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/mypage/reservation/completed")
+    public ResponseEntity<?> myReservationCompleted(Authentication authentication){
+        try{
+            List<MyCompletedInfo> myCompletedInfos = userService.getMyComplete(authentication);
+            return ResponseEntity.ok(myCompletedInfos);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/mypage/reservation/canceled")
+    public ResponseEntity<?> myReservationCanceled(Authentication authentication){
+        try{
+            List<MyCanceledInfo> myCanceledInfos = userService.getMyCancel(authentication);
+            return ResponseEntity.ok(myCanceledInfos);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

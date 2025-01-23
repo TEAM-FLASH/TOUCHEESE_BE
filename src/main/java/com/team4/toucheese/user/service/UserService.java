@@ -1,10 +1,16 @@
 package com.team4.toucheese.user.service;
 
 import com.team4.toucheese.auth.dto.CustomUserDetails;
+import com.team4.toucheese.studio.entity.CancelReservation;
+import com.team4.toucheese.studio.entity.CompleteReservation;
 import com.team4.toucheese.studio.entity.Reservation;
 import com.team4.toucheese.studio.entity.Studio;
+import com.team4.toucheese.studio.repository.CancelReservationRepository;
+import com.team4.toucheese.studio.repository.CompleteReservationRepository;
 import com.team4.toucheese.studio.repository.ReservationRepository;
 import com.team4.toucheese.studio.repository.StudioRepository;
+import com.team4.toucheese.user.dto.MyCanceledInfo;
+import com.team4.toucheese.user.dto.MyCompletedInfo;
 import com.team4.toucheese.user.dto.MyInfoDto;
 import com.team4.toucheese.user.entity.BookMark;
 import com.team4.toucheese.user.entity.UserEntity;
@@ -28,6 +34,8 @@ public class UserService {
     private final BookMarkRepository bookMarkRepository;
     private final StudioRepository studioRepository;
     private final ReservationRepository reservationRepository;
+    private final CompleteReservationRepository completeReservationRepository;
+    private final CancelReservationRepository cancelReservationRepository;
 
     @Transactional
     public void addBookMark(Long userId, Long studioId){
@@ -81,7 +89,7 @@ public class UserService {
         List<Reservation> reservations = reservationRepository.findByUser(userId);
         List<MyInfoDto> dtos = new ArrayList<>();
         if (reservations.isEmpty()){
-            throw new IllegalArgumentException("reservation is null");
+            return null;
         }
         for (Reservation reservation : reservations){
             MyInfoDto dto = new MyInfoDto();
@@ -117,7 +125,7 @@ public class UserService {
         List<Reservation> reservations = reservationRepository.findByUser(userId);
         List<MyInfoDto> dtos = new ArrayList<>();
         if (reservations.isEmpty()){
-            throw new IllegalArgumentException("reservation is null");
+            return null;
         }
         for (Reservation reservation : reservations){
             MyInfoDto dto = new MyInfoDto();
@@ -134,9 +142,76 @@ public class UserService {
         }
         return dtos;
     }
+
     //이용완료 목록
+    public List<MyCompletedInfo> getMyComplete(Authentication authentication){
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String email = userDetails.getEmail();
+
+        if (email == null){
+            throw new IllegalArgumentException("email is null");
+        }
+        Optional<UserEntity> user = userRepository.findByEmail(email);
+        if (user.isEmpty()){
+            throw new IllegalArgumentException("user is null");
+        }
+        Long userId = user.get().getId();
+        List<CompleteReservation> completeReservations = completeReservationRepository.findByUser(userId);
+        List<MyCompletedInfo> dtos = new ArrayList<>();
+        if (completeReservations.isEmpty()){
+            return null;
+        }
+        for (CompleteReservation completeReservation : completeReservations){
+            MyCompletedInfo dto = new MyCompletedInfo();
+            dto.setCompletedReservationId(completeReservation.getId());
+            dto.setStudioId(completeReservation.getStudio().getId());
+            dto.setStudioName(completeReservation.getStudio().getName());
+            dto.setMenuId(completeReservation.getMenu().getId());
+            dto.setMenuName(completeReservation.getMenu().getName());
+            dto.setDate(completeReservation.getDate());
+            dto.setStartTime(completeReservation.getStart_time());
+            dto.setMenuImgUrl(completeReservation.getMenu().getMenuImages().get(0).getUrl());
+            dto.setStatus(completeReservation.getStatus());
+            dtos.add(dto);
+        }
+        return dtos;
+    }
 
     //예약취소 목록
+    public List<MyCanceledInfo> getMyCancel(Authentication authentication){
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String email = userDetails.getEmail();
+
+        if (email == null){
+            throw new IllegalArgumentException("email is null");
+        }
+        Optional<UserEntity> user = userRepository.findByEmail(email);
+        if (user.isEmpty()){
+            throw new IllegalArgumentException("user is null");
+        }
+        Long userId = user.get().getId();
+        List<CancelReservation> cancelReservations = cancelReservationRepository.findByUser(userId);
+        List<MyCanceledInfo> dtos = new ArrayList<>();
+        if (cancelReservations.isEmpty()){
+            return null;
+        }
+        for (CancelReservation cancelReservation : cancelReservations){
+            MyCanceledInfo dto = new MyCanceledInfo();
+            dto.setCompletedReservationId(cancelReservation.getId());
+            dto.setStudioId(cancelReservation.getStudio().getId());
+            dto.setStudioName(cancelReservation.getStudio().getName());
+            dto.setMenuId(cancelReservation.getMenu().getId());
+            dto.setMenuName(cancelReservation.getMenu().getName());
+            dto.setDate(cancelReservation.getDate());
+            dto.setStartTime(cancelReservation.getStart_time());
+            dto.setMenuImgUrl(cancelReservation.getMenu().getMenuImages().get(0).getUrl());
+            dto.setStatus(cancelReservation.getStatus());
+            dto.setCancelReason(cancelReservation.getCancelReason());
+            dto.setCancelReasonDetail(cancelReservation.getCancelReasonDetail());
+            dtos.add(dto);
+        }
+        return dtos;
+    }
 
     //예약 상세
 

@@ -55,8 +55,8 @@ public class ReservationController {
             userEmail = userDetails.getEmail();
         }
         try{
-            Reservation reservation = reservationService.makeReservation(reservationRequest, userEmail);
-            return ResponseEntity.ok(reservation);
+            reservationService.makeReservation(reservationRequest, userEmail);
+            return ResponseEntity.ok("test OK");
         }catch (Exception e){
             return ResponseEntity.status(500).body(e.getMessage());
         }

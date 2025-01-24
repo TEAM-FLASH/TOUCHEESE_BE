@@ -3,6 +3,7 @@ package com.team4.toucheese.studio.controller;
 import com.team4.toucheese.auth.dto.CustomUserDetails;
 import com.team4.toucheese.studio.dto.AvailableTimeResultDto;
 import com.team4.toucheese.studio.dto.ReservationRequest;
+import com.team4.toucheese.studio.entity.Reservation;
 import com.team4.toucheese.studio.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -54,8 +55,8 @@ public class ReservationController {
             userEmail = userDetails.getEmail();
         }
         try{
-            reservationService.makeReservation(reservationRequest, userEmail);
-            return ResponseEntity.ok().build();
+            Reservation reservation = reservationService.makeReservation(reservationRequest, userEmail);
+            return ResponseEntity.ok(reservation);
         }catch (Exception e){
             return ResponseEntity.status(500).body(e.getMessage());
         }

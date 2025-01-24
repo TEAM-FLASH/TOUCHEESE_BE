@@ -167,7 +167,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public void makeReservation(ReservationRequest reservationRequest, String userEmail){
+    public Reservation makeReservation(ReservationRequest reservationRequest, String userEmail){
         System.out.println("userEmail = " + userEmail);
         Optional<UserEntity> user = userRepository.findByEmail(userEmail);
         Optional<Studio> studio = studioRepository.findById(reservationRequest.getStudioId());
@@ -227,6 +227,7 @@ public class ReservationService {
                 .totalPrice(reservationRequest.getTotalPrice())
                 .build();
         reservationRepository.save(makeReservation);
+        return makeReservation;
     }
 
     //이용완료

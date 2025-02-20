@@ -49,9 +49,13 @@ public class Reservation {
     private String impUid;
     private String merchantUid;
 
+    private boolean existReview;
+
 
     public enum ReservationStatus {
         RESERVED,
-        WAITING
+        WAITING,
+        Canceled,
+        Completed
     }
 }

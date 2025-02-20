@@ -129,22 +129,24 @@ public class UserService {
         }
         for (Reservation reservation : reservations){
             MyInfoDto dto = new MyInfoDto();
-            dto.setReservationId(reservation.getId());
-            dto.setStatus(reservation.getStatus().toString());
-            dto.setStudioId(reservation.getStudio().getId());
-            dto.setStudioName(reservation.getStudio().getName());
-            dto.setMenuId(reservation.getMenu().getId());
-            dto.setMenuName(reservation.getMenu().getName());
-            dto.setDate(reservation.getDate());
-            dto.setStartTime(reservation.getStart_time());
-            dto.setMenuImgUrl(reservation.getMenu().getMenuImages().get(0).getUrl());
-            dtos.add(dto);
+            if (reservation.getStatus().toString().equals("RESERVED")){
+                dto.setReservationId(reservation.getId());
+                dto.setStatus(reservation.getStatus().toString());
+                dto.setStudioId(reservation.getStudio().getId());
+                dto.setStudioName(reservation.getStudio().getName());
+                dto.setMenuId(reservation.getMenu().getId());
+                dto.setMenuName(reservation.getMenu().getName());
+                dto.setDate(reservation.getDate());
+                dto.setStartTime(reservation.getStart_time());
+                dto.setMenuImgUrl(reservation.getMenu().getMenuImages().get(0).getUrl());
+                dtos.add(dto);
+            }
         }
         return dtos;
     }
 
     //이용완료 목록
-    public List<MyCompletedInfo> getMyComplete(Authentication authentication){
+    public List<MyInfoDto> getMyComplete(Authentication authentication){
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String email = userDetails.getEmail();
 
@@ -156,29 +158,32 @@ public class UserService {
             throw new IllegalArgumentException("user is null");
         }
         Long userId = user.get().getId();
-        List<CompleteReservation> completeReservations = completeReservationRepository.findByUser(userId);
-        List<MyCompletedInfo> dtos = new ArrayList<>();
-        if (completeReservations.isEmpty()){
+        List<Reservation> reservations = reservationRepository.findByUser(userId);
+        List<MyInfoDto> dtos = new ArrayList<>();
+        if (reservations.isEmpty()){
             return null;
         }
-        for (CompleteReservation completeReservation : completeReservations){
-            MyCompletedInfo dto = new MyCompletedInfo();
-            dto.setCompletedReservationId(completeReservation.getId());
-            dto.setStudioId(completeReservation.getStudio().getId());
-            dto.setStudioName(completeReservation.getStudio().getName());
-            dto.setMenuId(completeReservation.getMenu().getId());
-            dto.setMenuName(completeReservation.getMenu().getName());
-            dto.setDate(completeReservation.getDate());
-            dto.setStartTime(completeReservation.getStart_time());
-            dto.setMenuImgUrl(completeReservation.getMenu().getMenuImages().get(0).getUrl());
-            dto.setStatus(completeReservation.getStatus());
-            dtos.add(dto);
+        for (Reservation reservation : reservations){
+            MyInfoDto dto = new MyInfoDto();
+            if (reservation.getStatus().toString().equals("COMPLETED")){
+                dto.setReservationId(reservation.getId());
+                dto.setStatus(reservation.getStatus().toString());
+                dto.setStudioId(reservation.getStudio().getId());
+                dto.setStudioName(reservation.getStudio().getName());
+                dto.setMenuId(reservation.getMenu().getId());
+                dto.setMenuName(reservation.getMenu().getName());
+                dto.setDate(reservation.getDate());
+                dto.setStartTime(reservation.getStart_time());
+                dto.setMenuImgUrl(reservation.getMenu().getMenuImages().get(0).getUrl());
+                dtos.add(dto);
+            }
+
         }
         return dtos;
     }
 
     //예약취소 목록
-    public List<MyCanceledInfo> getMyCancel(Authentication authentication){
+    public List<MyInfoDto> getMyCancel(Authentication authentication){
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String email = userDetails.getEmail();
 
@@ -190,25 +195,24 @@ public class UserService {
             throw new IllegalArgumentException("user is null");
         }
         Long userId = user.get().getId();
-        List<CancelReservation> cancelReservations = cancelReservationRepository.findByUser(userId);
-        List<MyCanceledInfo> dtos = new ArrayList<>();
-        if (cancelReservations.isEmpty()){
+        List<Reservation> reservations = reservationRepository.findByUser(userId);
+        List<MyInfoDto> dtos = new ArrayList<>();
+        if (reservations.isEmpty()){
             return null;
         }
-        for (CancelReservation cancelReservation : cancelReservations){
-            MyCanceledInfo dto = new MyCanceledInfo();
-            dto.setCompletedReservationId(cancelReservation.getId());
-            dto.setStudioId(cancelReservation.getStudio().getId());
-            dto.setStudioName(cancelReservation.getStudio().getName());
-            dto.setMenuId(cancelReservation.getMenu().getId());
-            dto.setMenuName(cancelReservation.getMenu().getName());
-            dto.setDate(cancelReservation.getDate());
-            dto.setStartTime(cancelReservation.getStart_time());
-            dto.setMenuImgUrl(cancelReservation.getMenu().getMenuImages().get(0).getUrl());
-            dto.setStatus(cancelReservation.getStatus());
-            dto.setCancelReason(cancelReservation.getCancelReason());
-            dto.setCancelReasonDetail(cancelReservation.getCancelReasonDetail());
-            dtos.add(dto);
+        for (Reservation reservation : reservations){
+            MyInfoDto dto = new MyInfoDto();
+            if (reservation.getStatus().toString().equals("CANCELED")){
+                dto.setReservationId(reservation.getId());
+                dto.setStatus(reservation.getStatus().toString());
+                dto.setStudioId(reservation.getStudio().getId());
+                dto.setStudioName(reservation.getStudio().getName());
+                dto.setMenuId(reservation.getMenu().getId());
+                dto.setMenuName(reservation.getMenu().getName());
+                dto.setDate(reservation.getDate());
+                dto.setStartTime(reservation.getStart_time());
+                dtos.add(dto);
+            }
         }
         return dtos;
     }

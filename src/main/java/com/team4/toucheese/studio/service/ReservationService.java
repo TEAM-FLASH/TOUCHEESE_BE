@@ -47,6 +47,14 @@ public class ReservationService {
 
         //1. 예약된 일정 가져오기
         List<Reservation> reservations  = reservationRepository.findReservationsForStudio(studioId, year, month);
+        //가져온 일정 중 status가 reserved 이거나 completed 이거나 waiting 인 것만 (Not canceled) 추출
+        //예약정보를 담을 리스트 생성
+        List<Reservation> availableReservations = new ArrayList<>();
+        for (Reservation reservation : reservations) {
+            if (!reservation.getStatus().toString().equals("Canceled")) {
+                availableReservations.add(reservation);
+            }
+        }
 
         //2. 스튜디오의 운영시간, 휴무일, 특별 휴무일 가져오기
         //운영시간
@@ -84,7 +92,7 @@ public class ReservationService {
 
             // 4-3. 하루의 예약 가능한 시간 계산
             List<AvailableTimeDto> timeSlots = calculateAvailableTimes(
-                    currentDate, reservations,
+                    currentDate, availableReservations,
                     dayHours.getOpenTime().toLocalTime(),
                     dayHours.getCloseTime().toLocalTime(),
                     duration
@@ -99,6 +107,9 @@ public class ReservationService {
             // 4-4. 날짜와 시간 상태 저장
             dailySlot.setDate(currentDate.toString()); // 예: "2025-01-01"
             dailySlot.setAvailableTimeDto(timeSlots); // 시간 및 가능 여부 저장
+            //TODO closeTime 저장
+            LocalTime closeTime = findStudioCloseTime(studioId, currentDate);
+            dailySlot.setCloseTime(closeTime);
             availableDates.add(dailySlot);
         }
 
@@ -107,6 +118,12 @@ public class ReservationService {
         resultDto.setAvailableTimeWithDates(availableDates);
         resultDto.setDisableDates(disableDates); // 비활성 날짜
         return resultDto;
+    }
+
+    private LocalTime findStudioCloseTime(Long studioId, LocalDate date){
+        Optional<Studio> studio = studioRepository.findById(studioId);
+        Time closeTime = studio.get().getClose_time();
+        return LocalTime.of(closeTime.getHours(), closeTime.getMinutes());
     }
 
     private boolean isHoliday(LocalDate date, List<StudioHoliday> holidays, List<StudioSpecialHoliday> specialHolidays){
@@ -172,7 +189,8 @@ public class ReservationService {
         Optional<UserEntity> user = userRepository.findByEmail(userEmail);
         Optional<Studio> studio = studioRepository.findById(reservationRequest.getStudioId());
         Optional<Menu> menu = menuRepository.findById(reservationRequest.getMenuId());
-        List<AdditionalOption> additionalOptions = additionalOptionRepository.findAllById(reservationRequest.getAdditionalOptionIds());
+        List<Long> additionalOptionIds = Optional.ofNullable(reservationRequest.getAdditionalOptionIds()).orElse(Collections.emptyList());
+        List<AdditionalOption> additionalOptions = additionalOptionRepository.findAllById(additionalOptionIds);
         // 유효성 검증
         if (user.isEmpty()) {
             throw new IllegalArgumentException("User not found.");
@@ -183,9 +201,7 @@ public class ReservationService {
         if (menu.isEmpty()) {
             throw new IllegalArgumentException("Menu not found.");
         }
-        if (additionalOptions.isEmpty()) {
-            throw new IllegalArgumentException("Additional options not found.");
-        }
+
 //        List<Long> additionalOptionIds = additionalOptions.stream().map(AdditionalOption::getId).toList();
         //예약정보 DB에 저장
         Long userId = user.get().getId();
@@ -239,30 +255,30 @@ public class ReservationService {
         if (reservation.isEmpty()) {
             throw new IllegalArgumentException("Reservation not found.");
         }
-        if (reservation.get().getAdditionalOptionIds().isEmpty()) {
+        reservation.get().toBuilder().status(Reservation.ReservationStatus.valueOf("COMPLETE")).build();
+        reservationRepository.save(reservation.get());
 
-        }
-        CompleteReservation completeReservation = CompleteReservation.builder()
-                .studio(reservation.get().getStudio())
-                .menu(reservation.get().getMenu())
-                .additionalOptionIds(reservation.get().getAdditionalOptionIds())
-                .date(reservation.get().getDate())
-                .start_time(reservation.get().getStart_time())
-                .end_time(reservation.get().getEnd_time())
-                .note(reservation.get().getNote())
-                .visitingCustomerName(reservation.get().getVisitingCustomerName())
-                .visitingCustomerPhone(reservation.get().getVisitingCustomerPhone())
-                .impUid(reservation.get().getImpUid())
-                .merchantUid(reservation.get().getMerchantUid())
-                .totalPrice(reservation.get().getTotalPrice())
-                .user_id(reservation.get().getUser_id())
-                .paymentMethod(reservation.get().getPaymentMethod())
-                .status("COMPLETE")
-                .build();
-        //completeReservation 저장
-        completeReservationRepository.save(completeReservation);
-        //reservation 데이터 삭제
-        reservationRepository.deleteById(reservationId);
+//        CompleteReservation completeReservation = CompleteReservation.builder()
+//                .studio(reservation.get().getStudio())
+//                .menu(reservation.get().getMenu())
+//                .additionalOptionIds(reservation.get().getAdditionalOptionIds())
+//                .date(reservation.get().getDate())
+//                .start_time(reservation.get().getStart_time())
+//                .end_time(reservation.get().getEnd_time())
+//                .note(reservation.get().getNote())
+//                .visitingCustomerName(reservation.get().getVisitingCustomerName())
+//                .visitingCustomerPhone(reservation.get().getVisitingCustomerPhone())
+//                .impUid(reservation.get().getImpUid())
+//                .merchantUid(reservation.get().getMerchantUid())
+//                .totalPrice(reservation.get().getTotalPrice())
+//                .user_id(reservation.get().getUser_id())
+//                .paymentMethod(reservation.get().getPaymentMethod())
+//                .status("COMPLETE")
+//                .build();
+//        //completeReservation 저장
+//        completeReservationRepository.save(completeReservation);
+//        //reservation 데이터 삭제
+//        reservationRepository.deleteById(reservationId);
     }
     //예약 취소
     @Transactional
@@ -274,27 +290,30 @@ public class ReservationService {
         if (reservation.isEmpty()) {
             throw new IllegalArgumentException("Reservation not found.");
         }
-        CancelReservation cancelReservation = CancelReservation.builder()
-                .studio(reservation.get().getStudio())
-                .user_id(reservation.get().getUser_id())
-                .menu(reservation.get().getMenu())
-                .additionalOptionIds(reservation.get().getAdditionalOptionIds())
-                .date(reservation.get().getDate())
-                .start_time(reservation.get().getStart_time())
-                .end_time(reservation.get().getEnd_time())
-                .note(reservation.get().getNote())
-                .visitingCustomerName(reservation.get().getVisitingCustomerName())
-                .visitingCustomerPhone(reservation.get().getVisitingCustomerPhone())
-                .impUid(reservation.get().getImpUid())
-                .merchantUid(reservation.get().getMerchantUid())
-                .totalPrice(reservation.get().getTotalPrice())
-                .paymentMethod(reservation.get().getPaymentMethod())
-                .status("CANCEL")
-                .build();
-        //cancelReservation 저장
-        cancelReservationRepository.save(cancelReservation);
-        //reservation 데이터 삭제
-        reservationRepository.deleteById(reservationId);
+        reservation.get().toBuilder().status(Reservation.ReservationStatus.valueOf("CANCEL")).build();
+        reservationRepository.save(reservation.get());
+
+//        CancelReservation cancelReservation = CancelReservation.builder()
+//                .studio(reservation.get().getStudio())
+//                .user_id(reservation.get().getUser_id())
+//                .menu(reservation.get().getMenu())
+//                .additionalOptionIds(reservation.get().getAdditionalOptionIds())
+//                .date(reservation.get().getDate())
+//                .start_time(reservation.get().getStart_time())
+//                .end_time(reservation.get().getEnd_time())
+//                .note(reservation.get().getNote())
+//                .visitingCustomerName(reservation.get().getVisitingCustomerName())
+//                .visitingCustomerPhone(reservation.get().getVisitingCustomerPhone())
+//                .impUid(reservation.get().getImpUid())
+//                .merchantUid(reservation.get().getMerchantUid())
+//                .totalPrice(reservation.get().getTotalPrice())
+//                .paymentMethod(reservation.get().getPaymentMethod())
+//                .status("CANCEL")
+//                .build();
+//        //cancelReservation 저장
+//        cancelReservationRepository.save(cancelReservation);
+//        //reservation 데이터 삭제
+//        reservationRepository.deleteById(reservationId);
     }
 
 }

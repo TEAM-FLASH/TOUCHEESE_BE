@@ -29,8 +29,7 @@ public class Reservation {
     private LocalTime start_time;
     private LocalTime end_time;
     private String note;
-    @Enumerated(EnumType.STRING)
-    private ReservationStatus status;
+
     @CreationTimestamp
     private LocalDateTime created_at;
     @UpdateTimestamp
@@ -51,11 +50,14 @@ public class Reservation {
 
     private boolean existReview;
 
+    @Enumerated(EnumType.STRING)
+    private ReservationStatus status;
+
 
     public enum ReservationStatus {
         RESERVED,
         WAITING,
-        Canceled,
-        Completed
+        CANCELED,
+        COMPLETED;
     }
 }

@@ -61,7 +61,7 @@ public class UserController {
     @GetMapping("/mypage/reservation/completed")
     public ResponseEntity<?> myReservationCompleted(Authentication authentication){
         try{
-            List<MyCompletedInfo> myCompletedInfos = userService.getMyComplete(authentication);
+            List<MyInfoDto> myCompletedInfos = userService.getMyComplete(authentication);
             return ResponseEntity.ok(myCompletedInfos);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -71,7 +71,7 @@ public class UserController {
     @GetMapping("/mypage/reservation/canceled")
     public ResponseEntity<?> myReservationCanceled(Authentication authentication){
         try{
-            List<MyCanceledInfo> myCanceledInfos = userService.getMyCancel(authentication);
+            List<MyInfoDto> myCanceledInfos = userService.getMyCancel(authentication);
             return ResponseEntity.ok(myCanceledInfos);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

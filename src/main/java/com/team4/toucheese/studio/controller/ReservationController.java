@@ -6,6 +6,8 @@ import com.team4.toucheese.studio.dto.ReservationRequest;
 import com.team4.toucheese.studio.entity.Reservation;
 import com.team4.toucheese.studio.service.ReservationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -55,10 +57,13 @@ public class ReservationController {
             userEmail = userDetails.getEmail();
         }
         try{
-            reservationService.makeReservation(reservationRequest, userEmail);
-            return ResponseEntity.ok("test OK");
+            return ResponseEntity.ok(reservationService.makeReservation(reservationRequest, userEmail));
+        }catch (ConfigDataResourceNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }catch (Exception e){
-            return ResponseEntity.status(500).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

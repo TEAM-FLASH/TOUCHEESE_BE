@@ -17,6 +17,7 @@ import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -184,7 +185,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public void makeReservation(ReservationRequest reservationRequest, String userEmail){
+    public ReservationResultDto makeReservation(ReservationRequest reservationRequest, String userEmail){
         System.out.println("userEmail = " + userEmail);
         Optional<UserEntity> user = userRepository.findByEmail(userEmail);
         Optional<Studio> studio = studioRepository.findById(reservationRequest.getStudioId());
@@ -243,6 +244,26 @@ public class ReservationService {
                 .totalPrice(reservationRequest.getTotalPrice())
                 .build();
         reservationRepository.save(makeReservation);
+
+        ReservationResultDto reservationResultDto = new ReservationResultDto();
+        reservationResultDto.setReservationId(makeReservation.getId());
+        reservationResultDto.setStudioId(makeReservation.getStudio().getId());
+        reservationResultDto.setStudioName(makeReservation.getStudio().getName());
+        reservationResultDto.setMenuId(makeReservation.getMenu().getId());
+        reservationResultDto.setMenuName(makeReservation.getMenu().getName());
+        reservationResultDto.setAdditionalMenuIds(additionalOptions.stream().map(AdditionalOption::getId).collect(Collectors.toList()));
+        reservationResultDto.setAdditionalMenuNames(additionalOptions.stream().map(AdditionalOption::getName).collect(Collectors.toList()));
+        reservationResultDto.setAdditionalMenuPrices(additionalOptions.stream().map(AdditionalOption::getPrice).collect(Collectors.toList()));
+        reservationResultDto.setUserName(user.get().getUsername());
+        reservationResultDto.setUserPhone(user.get().getPhone());
+        reservationResultDto.setStartTime(makeReservation.getStart_time());
+        reservationResultDto.setEndTime(makeReservation.getEnd_time());
+        reservationResultDto.setNote(makeReservation.getNote());
+        reservationResultDto.setAdditionalMenuIds(makeReservation.getAdditionalOptionIds());
+        reservationResultDto.setTotalPrice(makeReservation.getTotalPrice());
+        reservationResultDto.setStatus(makeReservation.getStatus().toString());
+
+        return reservationResultDto;
     }
 
     //이용완료

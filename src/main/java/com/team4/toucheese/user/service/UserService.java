@@ -9,9 +9,7 @@ import com.team4.toucheese.studio.repository.CancelReservationRepository;
 import com.team4.toucheese.studio.repository.CompleteReservationRepository;
 import com.team4.toucheese.studio.repository.ReservationRepository;
 import com.team4.toucheese.studio.repository.StudioRepository;
-import com.team4.toucheese.user.dto.MyCanceledInfo;
-import com.team4.toucheese.user.dto.MyCompletedInfo;
-import com.team4.toucheese.user.dto.MyInfoDto;
+import com.team4.toucheese.user.dto.*;
 import com.team4.toucheese.user.entity.BookMark;
 import com.team4.toucheese.user.entity.UserEntity;
 import com.team4.toucheese.user.repository.BookMarkRepository;
@@ -20,6 +18,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -223,6 +222,35 @@ public class UserService {
 
 
     //핸드폰 번호 변경
+    @Transactional
+    public ChangePhoneResultDTO changePhone(Authentication authentication, String phone){
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        Optional<UserEntity> user = userRepository.findByEmail(userDetails.getUsername());
+        if (user.isEmpty()){
+            throw new IllegalArgumentException("user is null");
+        }
+        UserEntity userEntity = user.get().toBuilder().phone(phone).build();
+        userRepository.save(userEntity);
+
+        ChangePhoneResultDTO changePhoneResultDTO = new ChangePhoneResultDTO();
+        changePhoneResultDTO.setMessage("Change Phone Success");
+        return changePhoneResultDTO;
+    }
 
     //비밀번호 변경
+    @Transactional
+    public ChangePasswordResultDTO changePassword(Authentication authentication, String password){
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        Optional<UserEntity> user = userRepository.findByEmail(userDetails.getUsername());
+        if (user.isEmpty()){
+            throw new IllegalArgumentException("user is null");
+        }
+        UserEntity userEntity = user.get().toBuilder().password(password).build();
+        userRepository.save(userEntity);
+
+        ChangePasswordResultDTO changePasswordResultDTO = new ChangePasswordResultDTO();
+        changePasswordResultDTO.setMessage("Change Password Success");
+        return changePasswordResultDTO;
+    }
+
 }

@@ -1,8 +1,6 @@
 package com.team4.toucheese.user.controller;
 
-import com.team4.toucheese.user.dto.MyCanceledInfo;
-import com.team4.toucheese.user.dto.MyCompletedInfo;
-import com.team4.toucheese.user.dto.MyInfoDto;
+import com.team4.toucheese.user.dto.*;
 import com.team4.toucheese.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -74,6 +72,24 @@ public class UserController {
         try{
             List<MyInfoDto> myCanceledInfos = userService.getMyCancel(authentication);
             return ResponseEntity.ok(myCanceledInfos);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/mypage/changepw")
+    public ResponseEntity<?> changePassword(Authentication authentication, ChangePasswordRequest changePasswordRequest){
+        try {
+            return ResponseEntity.ok(userService.changePassword(authentication, changePasswordRequest.getNewPassword()));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/mypage/changeph")
+    public ResponseEntity<?> changePhone(Authentication authentication, ChangePhoneRequest changePhoneRequest){
+        try{
+            return ResponseEntity.ok(userService.changePhone(authentication, changePhoneRequest.getNewPhone()));
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

@@ -247,21 +247,21 @@ public class ReservationService {
 
         ReservationResultDto reservationResultDto = new ReservationResultDto();
         reservationResultDto.setReservationId(makeReservation.getId());
-        reservationResultDto.setStudioId(makeReservation.getStudio().getId());
-        reservationResultDto.setStudioName(makeReservation.getStudio().getName());
-        reservationResultDto.setMenuId(makeReservation.getMenu().getId());
-        reservationResultDto.setMenuName(makeReservation.getMenu().getName());
-        reservationResultDto.setAdditionalMenuIds(additionalOptions.stream().map(AdditionalOption::getId).collect(Collectors.toList()));
-        reservationResultDto.setAdditionalMenuNames(additionalOptions.stream().map(AdditionalOption::getName).collect(Collectors.toList()));
-        reservationResultDto.setAdditionalMenuPrices(additionalOptions.stream().map(AdditionalOption::getPrice).collect(Collectors.toList()));
-        reservationResultDto.setUserName(user.get().getUsername());
-        reservationResultDto.setUserPhone(user.get().getPhone());
-        reservationResultDto.setStartTime(makeReservation.getStart_time());
-        reservationResultDto.setEndTime(makeReservation.getEnd_time());
-        reservationResultDto.setNote(makeReservation.getNote());
-        reservationResultDto.setAdditionalMenuIds(makeReservation.getAdditionalOptionIds());
-        reservationResultDto.setTotalPrice(makeReservation.getTotalPrice());
-        reservationResultDto.setStatus(makeReservation.getStatus().toString());
+//        reservationResultDto.setStudioId(makeReservation.getStudio().getId());
+//        reservationResultDto.setStudioName(makeReservation.getStudio().getName());
+//        reservationResultDto.setMenuId(makeReservation.getMenu().getId());
+//        reservationResultDto.setMenuName(makeReservation.getMenu().getName());
+//        reservationResultDto.setAdditionalMenuIds(additionalOptions.stream().map(AdditionalOption::getId).collect(Collectors.toList()));
+//        reservationResultDto.setAdditionalMenuNames(additionalOptions.stream().map(AdditionalOption::getName).collect(Collectors.toList()));
+//        reservationResultDto.setAdditionalMenuPrices(additionalOptions.stream().map(AdditionalOption::getPrice).collect(Collectors.toList()));
+//        reservationResultDto.setUserName(user.get().getUsername());
+//        reservationResultDto.setUserPhone(user.get().getPhone());
+//        reservationResultDto.setStartTime(makeReservation.getStart_time());
+//        reservationResultDto.setEndTime(makeReservation.getEnd_time());
+//        reservationResultDto.setNote(makeReservation.getNote());
+//        reservationResultDto.setAdditionalMenuIds(makeReservation.getAdditionalOptionIds());
+//        reservationResultDto.setTotalPrice(makeReservation.getTotalPrice());
+//        reservationResultDto.setStatus(makeReservation.getStatus().toString());
 
         return reservationResultDto;
     }
@@ -337,4 +337,47 @@ public class ReservationService {
 //        reservationRepository.deleteById(reservationId);
     }
 
+    public ReservationCheckDto checkReservation(Long reservationId){
+        Optional<Reservation> reservation = reservationRepository.findById(reservationId);
+        ReservationCheckDto reservationCheckDto = new ReservationCheckDto();
+
+        //additionalMenuNames
+        List<AdditionalOption> additionalOptions = new ArrayList<>();
+        additionalOptions = additionalOptionRepository.findAllById(reservation.get().getAdditionalOptionIds());
+        List<String> additionalOptionNames = new ArrayList<>();
+        for (AdditionalOption additionalOption : additionalOptions) {
+            additionalOptionNames.add(additionalOption.getName());
+        }
+        //additionalMenuPrices
+        List<Integer> additionalOptionPrices = new ArrayList<>();
+        for (AdditionalOption additionalOption : additionalOptions) {
+            additionalOptionPrices.add(additionalOption.getPrice());
+        }
+        //userName
+        Optional<UserEntity> user = userRepository.findById(reservation.get().getUser_id());
+        String userName = user.get().getUsername();
+        //userPhone
+        String userPhone = user.get().getPhone();
+
+        reservationCheckDto.setReservationId(reservationId);
+        reservationCheckDto.setStudioId(reservation.get().getStudio().getId());
+        reservationCheckDto.setStudioName(reservation.get().getStudio().getName());
+        reservationCheckDto.setStartTime(reservation.get().getStart_time());
+        reservationCheckDto.setEndTime(reservation.get().getEnd_time());
+        reservationCheckDto.setMenuId(reservation.get().getMenu().getId());
+        reservationCheckDto.setMenuName(reservation.get().getMenu().getName());
+        reservationCheckDto.setAdditionalMenuIds(reservation.get().getAdditionalOptionIds());
+        reservationCheckDto.setAdditionalMenuPrices(additionalOptionPrices);
+        reservationCheckDto.setAdditionalMenuNames(additionalOptionNames);
+        reservationCheckDto.setUserName(userName);
+        reservationCheckDto.setUserPhone(userPhone);
+        reservationCheckDto.setNote(reservation.get().getNote());
+        reservationCheckDto.setTotalPrice(reservation.get().getTotalPrice());
+        reservationCheckDto.setStatus(reservation.get().getStatus().toString());
+
+        return reservationCheckDto;
+    }
+
 }
+
+

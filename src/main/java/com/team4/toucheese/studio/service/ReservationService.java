@@ -122,9 +122,15 @@ public class ReservationService {
     }
 
     private LocalTime findStudioCloseTime(Long studioId, LocalDate date){
-        Optional<Studio> studio = studioRepository.findById(studioId);
-        Time closeTime = studio.get().getClose_time();
-        return LocalTime.of(closeTime.getHours(), closeTime.getMinutes());
+//        Optional<Studio> studio = studioRepository.findById(studioId);
+//        Time closeTime = studio.get().getClose_time();
+
+        StudioOpeningHours studioOpeningHours = studioOpeningHoursRepository.findByStudio_IdAndDayOfWeek(studioId, date.getDayOfWeek());
+        if (!studioOpeningHours.isClosed()){
+            Time closeTime = studioOpeningHours.getCloseTime();
+            return closeTime.toLocalTime();
+        }
+        else return null;
     }
 
     private boolean isHoliday(LocalDate date, List<StudioHoliday> holidays, List<StudioSpecialHoliday> specialHolidays){

@@ -2,6 +2,7 @@ package com.team4.toucheese.studio.controller;
 
 import com.team4.toucheese.auth.dto.CustomUserDetails;
 import com.team4.toucheese.studio.dto.AvailableTimeResultDto;
+import com.team4.toucheese.studio.dto.ReservationCheckRequest;
 import com.team4.toucheese.studio.dto.ReservationRequest;
 import com.team4.toucheese.studio.entity.Reservation;
 import com.team4.toucheese.studio.service.ReservationService;
@@ -82,6 +83,15 @@ public class ReservationController {
         try{
             reservationService.cancelReservation(reservationId);
             return ResponseEntity.ok().build();
+        }catch (Exception e){
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/check")
+    public ResponseEntity<?> reservationCheck(ReservationCheckRequest reservationCheckRequest){
+        try{
+            return ResponseEntity.ok(reservationService.checkReservation(reservationCheckRequest.getReservationId()));
         }catch (Exception e){
             return ResponseEntity.status(500).body(e.getMessage());
         }

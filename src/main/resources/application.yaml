@@ -80,5 +80,7 @@ cloud:
       secret-key: ${S3_SECRET_KEY}
     region:
       static: ap-northeast-2
+    s3:
+      bucket: toucheese   # 버킷 이름
     stack:
       auto: false

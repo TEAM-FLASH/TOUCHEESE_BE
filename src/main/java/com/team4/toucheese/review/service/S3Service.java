@@ -12,8 +12,10 @@ import com.team4.toucheese.review.entity.Review;
 import com.team4.toucheese.review.entity.ReviewImage;
 import com.team4.toucheese.review.repository.ReviewImageRepository;
 import com.team4.toucheese.review.repository.ReviewRepository;
+import com.team4.toucheese.studio.entity.AdditionalOption;
 import com.team4.toucheese.studio.entity.Menu;
 import com.team4.toucheese.studio.entity.Studio;
+import com.team4.toucheese.studio.repository.AdditionalOptionRepository;
 import com.team4.toucheese.studio.repository.MenuRepository;
 import com.team4.toucheese.studio.repository.StudioRepository;
 import com.team4.toucheese.user.entity.UserEntity;
@@ -45,6 +47,7 @@ public class S3Service {
     private final UserRepository userRepository;
     private final ReviewImageRepository reviewImageRepository;
     private final StudioRepository studioRepository;
+    private final AdditionalOptionRepository additionalOptionRepository;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
@@ -60,9 +63,13 @@ public class S3Service {
         UserEntity user = getUser(authentication);
         Menu menu = getMenu(createReviewRequestDto.getMenuId());
         Studio studio = getStudio(menu.getStudio().getId());
+        List<AdditionalOption> additionalOptions = new ArrayList<>();
+        if (createReviewRequestDto.getAdditionalOptionIds() != null && !createReviewRequestDto.getAdditionalOptionIds().isEmpty()) {
+            additionalOptions = getAdditionalOption(createReviewRequestDto.getAdditionalOptionIds());
+        }
 
         // Create Review
-        Review review = createReview(createReviewRequestDto, user, menu, studio);
+        Review review = createReview(createReviewRequestDto, user, menu, studio, additionalOptions);
 
         // Upload files to S3
         if (createReviewRequestDto.getMultipartFiles() != null && !createReviewRequestDto.getMultipartFiles().isEmpty()) {
@@ -89,13 +96,23 @@ public class S3Service {
         return studioRepository.findById(studioId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "스튜디오를 찾을 수 없습니다."));
     }
+    private List<AdditionalOption> getAdditionalOption(List<Long> additionalOptionIds){
+        List<AdditionalOption> additionalOptions = new ArrayList<>();
+        for (Long additionalOptionId : additionalOptionIds) {
+            AdditionalOption additionalOption = additionalOptionRepository.findById(additionalOptionId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "추가옵션을 찾을 수 없습니다"));
+            additionalOptions.add(additionalOption);
+        }
+        return additionalOptions;
+    }
 
-    private Review createReview(CreateReviewRequestDto requestDto, UserEntity user, Menu menu, Studio studio) {
+    private Review createReview(CreateReviewRequestDto requestDto, UserEntity user, Menu menu, Studio studio, List<AdditionalOption> additionalOptions) {
         return Review.builder()
                 .content(requestDto.getContent())
                 .menu(menu)
                 .user(user)
                 .studio(studio)
+                .additionalOptions(additionalOptions)
                 .rating(requestDto.getRating())
                 .build();
     }

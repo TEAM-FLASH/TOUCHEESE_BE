@@ -4,6 +4,8 @@ import com.team4.toucheese.auth.dto.CustomUserDetails;
 import com.team4.toucheese.review.dto.CreateReviewRequestDto;
 import com.team4.toucheese.review.service.S3Service;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +24,14 @@ public class ReviewController {
 
     @PostMapping("/file")
     public ResponseEntity<?> uploadFile(CreateReviewRequestDto createReviewRequestDto, Authentication authentication) {
-        return ResponseEntity.ok(s3Service.uploadReview(createReviewRequestDto, authentication));
+        try{
+            return ResponseEntity.ok(s3Service.uploadReview(createReviewRequestDto, authentication));
+        }catch (ConfigDataResourceNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

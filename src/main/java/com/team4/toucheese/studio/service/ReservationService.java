@@ -317,7 +317,7 @@ public class ReservationService {
         if (reservation.isEmpty()) {
             throw new IllegalArgumentException("Reservation not found.");
         }
-        reservation.get().toBuilder().status(Reservation.ReservationStatus.valueOf("CANCEL")).build();
+        reservation.get().toBuilder().status(Reservation.ReservationStatus.valueOf("CANCELED")).build();
         reservationRepository.save(reservation.get());
 
 //        CancelReservation cancelReservation = CancelReservation.builder()

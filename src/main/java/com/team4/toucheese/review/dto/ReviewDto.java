@@ -2,6 +2,7 @@ package com.team4.toucheese.review.dto;
 
 import com.team4.toucheese.review.entity.Review;
 import com.team4.toucheese.review.entity.ReviewImage;
+import com.team4.toucheese.studio.dto.AdditionalOptionDto;
 import com.team4.toucheese.studio.entity.Menu;
 import com.team4.toucheese.user.entity.UserEntity;
 import jakarta.persistence.CascadeType;
@@ -24,11 +25,14 @@ public class ReviewDto {
     private Long id;
     private Long userId;
     private String userName;
+    private Long studioId;
+    private String studioName;
     private Long menuId;
     private String menuName;
     private String content;
     private Integer rating;
     private List<ReviewImageDto> reviewImages;
+    private List<AdditionalOptionDto> additionalOptions;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
 
@@ -39,11 +43,14 @@ public class ReviewDto {
                 .id(entity.getId())
                 .userId(entity.getUser().getId())
                 .userName(entity.getUser().getUsername())
+                .studioId(entity.getMenu().getStudio().getId())
+                .studioName(entity.getMenu().getStudio().getName())
                 .menuId(entity.getMenu().getId())
                 .menuName(entity.getMenu().getName())
                 .content(entity.getContent())
                 .rating(entity.getRating())
                 .reviewImages(entity.getReviewImages().stream().map(ReviewImageDto::fromEntity).toList())
+                .additionalOptions(entity.getAdditionalOptions().stream().map(AdditionalOptionDto::fromEntity).toList())
                 .created_at(entity.getCreated_at())
                 .updated_at(entity.getUpdated_at())
                 .build();

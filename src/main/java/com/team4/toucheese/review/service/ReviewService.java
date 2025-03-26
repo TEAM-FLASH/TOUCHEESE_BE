@@ -7,7 +7,9 @@ import com.team4.toucheese.review.entity.ReviewImage;
 import com.team4.toucheese.review.repository.ReviewImageRepository;
 import com.team4.toucheese.review.repository.ReviewRepository;
 import com.team4.toucheese.studio.entity.Menu;
+import com.team4.toucheese.studio.entity.Studio;
 import com.team4.toucheese.studio.repository.MenuRepository;
+import com.team4.toucheese.studio.repository.StudioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -26,6 +29,7 @@ public class ReviewService {
     private final ReviewImageService reviewImageService;
     private final MenuRepository menuRepository;
     private final ReviewImageRepository reviewImageRepository;
+    private final StudioRepository studioRepository;
 
     public List<ReviewDto> findStudioReview(Long studioId){
         if (studioId == null){
@@ -96,6 +100,9 @@ public class ReviewService {
         List<ReviewImage> reviewImages = reviewImageService.findByStudio(studioId);
         List<String> reviewImageUrls = reviewImages.stream().map(ReviewImage::getUrl).toList();
 
+        //스튜디오 이름 찾기
+        Optional<Studio> studio = studioRepository.findById(studioId);
+
 
         reviewDetailWithTotal.setMenuNameList(menus.stream().map(Menu::getName).toList());
         reviewDetailWithTotal.setMenuIdList(menus.stream().map(Menu::getId).toList());
@@ -104,6 +111,9 @@ public class ReviewService {
         reviewDetailWithTotal.setTotalImageNum(totalImageNum);
         reviewDetailWithTotal.setAvgRating(avgRating);
         reviewDetailWithTotal.setTotalReviewNum(totalSize);
+        reviewDetailWithTotal.setStudioId(studioId);
+        reviewDetailWithTotal.setStudioName(studio.get().getName());
+
 
 
         return reviewDetailWithTotal;

@@ -89,7 +89,7 @@ public class ReservationController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<?> reservationCheck(ReservationCheckRequest reservationCheckRequest){
+    public ResponseEntity<?> reservationCheck(@RequestBody ReservationCheckRequest reservationCheckRequest){
         try{
             return ResponseEntity.ok(reservationService.checkReservation(reservationCheckRequest.getReservationId()));
         }catch (Exception e){

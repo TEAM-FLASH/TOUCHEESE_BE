@@ -2,6 +2,7 @@ package com.team4.toucheese.review.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Builder(toBuilder = true)
 public class ReviewImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

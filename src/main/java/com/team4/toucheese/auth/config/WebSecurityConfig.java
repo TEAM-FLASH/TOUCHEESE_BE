@@ -85,7 +85,7 @@ public class WebSecurityConfig {
 
     @Bean public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://toucheese.store", "https://www.toucheeseapi.shop"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://toucheese-flash.store", "https://www.toucheese-flash.store", "https://www.toucheeseapi.shop"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

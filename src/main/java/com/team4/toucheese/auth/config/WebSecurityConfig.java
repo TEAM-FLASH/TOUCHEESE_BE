@@ -43,7 +43,9 @@ public class WebSecurityConfig {
                                 "/token/**",
                                 "/user/auth/kakao/callback",
                                 "/login/oauth2/code/kakao",
-                                "/reservation/**"
+                                "/reservation/**",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
                         ).permitAll()
                         .requestMatchers(
                                 "/auth/my-profile",

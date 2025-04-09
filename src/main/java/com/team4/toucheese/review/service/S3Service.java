@@ -8,6 +8,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.team4.toucheese.auth.dto.CustomUserDetails;
 import com.team4.toucheese.review.dto.CreateReviewRequestDto;
+import com.team4.toucheese.review.dto.ReviewDto;
 import com.team4.toucheese.review.entity.Review;
 import com.team4.toucheese.review.entity.ReviewImage;
 import com.team4.toucheese.review.repository.ReviewImageRepository;
@@ -59,7 +60,7 @@ public class S3Service {
     private final List<String> allowedImageTypes = List.of("image/jpeg", "image/png", "image/gif");
 
     @Transactional
-    public String uploadReview(CreateReviewRequestDto createReviewRequestDto, Authentication authentication) {
+    public ReviewDto uploadReview(CreateReviewRequestDto createReviewRequestDto, Authentication authentication) {
         UserEntity user = getUser(authentication);
         Menu menu = getMenu(createReviewRequestDto.getMenuId());
         Studio studio = getStudio(menu.getStudio().getId());
@@ -79,7 +80,7 @@ public class S3Service {
         // Save review
         reviewRepository.save(review);
 
-        return "done";
+        return ReviewDto.fromEntity(review);
     }
 
     private UserEntity getUser(Authentication authentication) {

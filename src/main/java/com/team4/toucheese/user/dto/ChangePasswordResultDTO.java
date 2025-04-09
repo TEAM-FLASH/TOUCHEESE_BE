@@ -8,5 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChangePasswordResultDTO {
-    String message;
+    private boolean success;
+    private String message;
 }

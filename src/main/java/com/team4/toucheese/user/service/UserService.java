@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class UserService {
     private final ReservationRepository reservationRepository;
     private final CompleteReservationRepository completeReservationRepository;
     private final CancelReservationRepository cancelReservationRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public void addBookMark(Long userId, Long studioId){
@@ -224,8 +226,8 @@ public class UserService {
     //핸드폰 번호 변경
     @Transactional
     public ChangePhoneResultDTO changePhone(Authentication authentication, String phone){
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        Optional<UserEntity> user = userRepository.findByEmail(userDetails.getUsername());
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Optional<UserEntity> user = userRepository.findByEmail(userDetails.getEmail());
         if (user.isEmpty()){
             throw new IllegalArgumentException("user is null");
         }
@@ -234,22 +236,26 @@ public class UserService {
 
         ChangePhoneResultDTO changePhoneResultDTO = new ChangePhoneResultDTO();
         changePhoneResultDTO.setMessage("Change Phone Success");
+        changePhoneResultDTO.setSuccess(Boolean.TRUE);
         return changePhoneResultDTO;
     }
 
     //비밀번호 변경
     @Transactional
     public ChangePasswordResultDTO changePassword(Authentication authentication, String password){
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        Optional<UserEntity> user = userRepository.findByEmail(userDetails.getUsername());
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+//        System.out.println("password = " + password);
+//        System.out.println(userDetails.getEmail());
+        Optional<UserEntity> user = userRepository.findByEmail(userDetails.getEmail());
         if (user.isEmpty()){
             throw new IllegalArgumentException("user is null");
         }
-        UserEntity userEntity = user.get().toBuilder().password(password).build();
+        UserEntity userEntity = user.get().toBuilder().password(passwordEncoder.encode(password)).build();
         userRepository.save(userEntity);
 
         ChangePasswordResultDTO changePasswordResultDTO = new ChangePasswordResultDTO();
         changePasswordResultDTO.setMessage("Change Password Success");
+        changePasswordResultDTO.setSuccess(Boolean.TRUE);
         return changePasswordResultDTO;
     }
 

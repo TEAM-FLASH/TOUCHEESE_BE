@@ -2,6 +2,7 @@ package com.team4.toucheese.studio.controller;
 
 import com.team4.toucheese.auth.dto.CustomUserDetails;
 import com.team4.toucheese.studio.dto.AvailableTimeResultDto;
+import com.team4.toucheese.studio.dto.CancelReservationResultDto;
 import com.team4.toucheese.studio.dto.ReservationCheckRequest;
 import com.team4.toucheese.studio.dto.ReservationRequest;
 import com.team4.toucheese.studio.entity.Reservation;
@@ -81,10 +82,12 @@ public class ReservationController {
     @PostMapping("/cancel/{reservationId}")
     public ResponseEntity<?> cancelReservation(@PathVariable("reservationId") Long reservationId){
         try{
-            reservationService.cancelReservation(reservationId);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(reservationService.cancelReservation(reservationId));
         }catch (Exception e){
-            return ResponseEntity.status(500).body(e.getMessage());
+            CancelReservationResultDto result = new CancelReservationResultDto();
+            result.setSuccess(false);
+            result.setMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
         }
     }
 

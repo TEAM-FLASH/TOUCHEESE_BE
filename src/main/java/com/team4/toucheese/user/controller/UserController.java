@@ -78,20 +78,32 @@ public class UserController {
     }
 
     @PostMapping("/mypage/changepw")
-    public ResponseEntity<?> changePassword(Authentication authentication, ChangePasswordRequest changePasswordRequest){
+    public ResponseEntity<?> changePassword(Authentication authentication,
+                                            @RequestBody
+                                            ChangePasswordRequest changePasswordRequest){
         try {
+//            System.out.println("changePasswordRequest = " + changePasswordRequest.getNewPassword());
             return ResponseEntity.ok(userService.changePassword(authentication, changePasswordRequest.getNewPassword()));
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            System.out.println("e = " + e.getMessage());
+            ChangePasswordResultDTO changePasswordResultDTO = new ChangePasswordResultDTO();
+            changePasswordResultDTO.setSuccess(false);
+            changePasswordResultDTO.setMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(changePasswordResultDTO);
         }
     }
 
     @PostMapping("/mypage/changeph")
-    public ResponseEntity<?> changePhone(Authentication authentication, ChangePhoneRequest changePhoneRequest){
+    public ResponseEntity<?> changePhone(Authentication authentication,
+                                         @RequestBody
+                                         ChangePhoneRequest changePhoneRequest){
         try{
             return ResponseEntity.ok(userService.changePhone(authentication, changePhoneRequest.getNewPhone()));
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            ChangePhoneResultDTO changePhoneResultDTO = new ChangePhoneResultDTO();
+            changePhoneResultDTO.setSuccess(false);
+            changePhoneResultDTO.setMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(changePhoneResultDTO);
         }
     }
 }

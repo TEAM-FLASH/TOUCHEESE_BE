@@ -387,7 +387,7 @@ public class ReservationService {
         reservationCheckDto.setStatus(reservation.get().getStatus().toString());
 
         //추가한 옵션
-        reservationCheckDto.setDate(reservation.get().getCreated_at());
+        reservationCheckDto.setDate(reservation.get().getDate());
         reservationCheckDto.setBasicPrice(reservation.get().getMenu().getPrice());
         reservationCheckDto.setPaymentMethod(reservation.get().getPaymentMethod());
         reservationCheckDto.setMenuImageUrl(reservation.get().getMenu().getMenuImages().get(0).getUrl());

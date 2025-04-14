@@ -2,7 +2,7 @@ package com.team4.toucheese.studio.dto;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -28,7 +28,7 @@ public class ReservationCheckDto {
     private String note;
     private Long totalPrice;
     private String status;
-    private LocalDateTime date;
+    private LocalDate date;
     private Integer basicPrice;
     private String paymentMethod;
     private String menuImageUrl;

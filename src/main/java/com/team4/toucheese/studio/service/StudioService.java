@@ -46,20 +46,23 @@ public class StudioService {
         //데이터 베이스에서 모든 데이터 가져옴
         List<Studio> studios = studioRepository.findAll();
 
-        //Get userId
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        String email = customUserDetails.getUsername();
-        UserEntity user = userRepository.findByEmail(email).orElse(null);
-        Long userId = user.getId();
-
         //데이터 DTO로 반환
         List<StudioDto> studioDtos = studios.stream()
                 .map(studio -> {
                     StudioDto studioDto = StudioDto.fromEntity(studio);
 
                     //북마크 체크 및 설정
-                    if (userService.checkBookMark(userId, studioDto.getId())){
-                        studioDto.setBookmark(true);
+                    if (authentication != null) {
+                        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+                        String email = customUserDetails.getEmail();
+                        UserEntity userEntity = userRepository.findByEmail(email).orElse(null);
+
+                        if (userEntity != null) {
+                            Long userId = userEntity.getId();
+                            if (userService.checkBookMark(userId, studioDto.getId())){
+                                studioDto.setBookmark(true);
+                            }
+                        }
                     }
                     return studioDto;
                 })
@@ -114,12 +117,6 @@ public class StudioService {
 //        }else {
 //            studios = studioRepository.findAll();
 //        }
-
-        //Get userId
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        String email = customUserDetails.getUsername();
-        UserEntity user = userRepository.findByEmail(email).orElse(null);
-        Long userId = user.getId();
 
         if (date != null) {
             studios = studios.stream()
@@ -250,8 +247,16 @@ public class StudioService {
                     StudioDto studioDto = StudioDto.fromEntity(studio);
 
                     //북마크 체크 및 설정
-                    if (userService.checkBookMark(userId, studioDto.getId())){
-                        studioDto.setBookmark(true);
+                    if (authentication != null) {
+                        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+                        String email = customUserDetails.getEmail();
+                        UserEntity userEntity = userRepository.findByEmail(email).orElse(null);
+                        if (userEntity != null) {
+                            Long userId = userEntity.getId();
+                            if (userService.checkBookMark(userId, studioDto.getId())){
+                                studioDto.setBookmark(true);
+                            }
+                        }
                     }
                     return studioDto;
                 })
@@ -276,20 +281,22 @@ public class StudioService {
         //검색어가 포함되어 있는 스튜디오
         List<Studio> studios = studioRepository.findByNameContaining(keyword);
 
-        //Get userId
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        String email = customUserDetails.getUsername();
-        UserEntity user = userRepository.findByEmail(email).orElse(null);
-        Long userId = user.getId();
-
         //DTO로 반환
         List<StudioDto> studioDtos = studios.stream()
                 .map(studio -> {
                     StudioDto studioDto = StudioDto.fromEntity(studio);
 
                     //북마크 체크 및 설정
-                    if (userService.checkBookMark(userId, studioDto.getId())){
-                        studioDto.setBookmark(true);
+                    if (authentication != null) {
+                        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+                        String email = customUserDetails.getEmail();
+                        UserEntity userEntity = userRepository.findByEmail(email).orElse(null);
+                        if (userEntity != null) {
+                            Long userId = userEntity.getId();
+                            if (userService.checkBookMark(userId, studioDto.getId())){
+                                studioDto.setBookmark(true);
+                            }
+                        }
                     }
                     return studioDto;
                 })

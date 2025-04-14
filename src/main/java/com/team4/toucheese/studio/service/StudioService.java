@@ -1,17 +1,21 @@
 package com.team4.toucheese.studio.service;
 
+import com.team4.toucheese.auth.dto.CustomUserDetails;
 import com.team4.toucheese.studio.dto.StudioDto;
 import com.team4.toucheese.studio.entity.Reservation;
 import com.team4.toucheese.studio.entity.Studio;
 import com.team4.toucheese.studio.entity.StudioOpeningHours;
 import com.team4.toucheese.studio.entity.StudioOption;
 import com.team4.toucheese.studio.repository.StudioRepository;
+import com.team4.toucheese.user.entity.UserEntity;
+import com.team4.toucheese.user.repository.UserRepository;
 import com.team4.toucheese.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -33,13 +37,20 @@ public class StudioService {
 //            60 * 60;   //1시간 (60초 * 60)
     private final RedisTemplate<String, String> redisTemplate;
     private final UserService userService;
+    private final UserRepository userRepository;
 
-    private final long userId = 1;
+//    private final long userId = 1;
 
     //모든 스튜디오 정보 가져와서 페이징
-    public Page<StudioDto> getAllStudios(int page, int size, SortBy sortby){
+    public Page<StudioDto> getAllStudios(int page, int size, SortBy sortby, Authentication authentication){
         //데이터 베이스에서 모든 데이터 가져옴
         List<Studio> studios = studioRepository.findAll();
+
+        //Get userId
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        String email = customUserDetails.getUsername();
+        UserEntity user = userRepository.findByEmail(email).orElse(null);
+        Long userId = user.getId();
 
         //데이터 DTO로 반환
         List<StudioDto> studioDtos = studios.stream()
@@ -83,7 +94,8 @@ public class StudioService {
             SortBy sortBy,
             int minPrice,
             int maxPrice,
-            String options
+            String options,
+            Authentication authentication
     ) {
         // 스튜디오 담을 리스트
         List<Studio> studios = studioRepository.findAll();
@@ -102,6 +114,12 @@ public class StudioService {
 //        }else {
 //            studios = studioRepository.findAll();
 //        }
+
+        //Get userId
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        String email = customUserDetails.getUsername();
+        UserEntity user = userRepository.findByEmail(email).orElse(null);
+        Long userId = user.getId();
 
         if (date != null) {
             studios = studios.stream()
@@ -253,10 +271,16 @@ public class StudioService {
     }
 
     //검색한 스튜디오
-    public Page<StudioDto> getStudiosWithSearch(String keyword, Pageable pageable){
+    public Page<StudioDto> getStudiosWithSearch(String keyword, Pageable pageable, Authentication authentication) {
 
         //검색어가 포함되어 있는 스튜디오
         List<Studio> studios = studioRepository.findByNameContaining(keyword);
+
+        //Get userId
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        String email = customUserDetails.getUsername();
+        UserEntity user = userRepository.findByEmail(email).orElse(null);
+        Long userId = user.getId();
 
         //DTO로 반환
         List<StudioDto> studioDtos = studios.stream()

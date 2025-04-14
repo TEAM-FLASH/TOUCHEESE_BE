@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,10 +31,11 @@ public class StudioController {
     public ResponseEntity<Page<StudioDto>> getAllStudios(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "POPULARITY") StudioService.SortBy sortBy
+            @RequestParam(defaultValue = "POPULARITY") StudioService.SortBy sortBy,
+            Authentication authentication
     ){
         try {
-            return ResponseEntity.ok(studioService.getAllStudios(page, size, sortBy));
+            return ResponseEntity.ok(studioService.getAllStudios(page, size, sortBy, authentication));
         }catch ( ConfigDataResourceNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }catch ( IllegalArgumentException e){
@@ -86,7 +88,8 @@ public class StudioController {
             @RequestParam(defaultValue = "POPULARITY") StudioService.SortBy sortBy,
             @RequestParam(defaultValue = "-1")int minPrice,
             @RequestParam(defaultValue = "-1")int maxPrice,
-            @RequestParam(required = false) String options
+            @RequestParam(required = false) String options,
+            Authentication authentication
     ) {
         System.out.println("date = " + date);
         if (times == null) {
@@ -102,7 +105,7 @@ public class StudioController {
         System.out.println("options = " + options);
 
         return ResponseEntity.ok(studioService.getStudiosWithFilter(date, times, duration, vibeName,
-                    addressGu, pageable, sortBy, minPrice, maxPrice,options));
+                    addressGu, pageable, sortBy, minPrice, maxPrice,options, authentication));
 //        try {
 //            return ResponseEntity.ok(studioService.getStudiosWithFilter(date, times, duration, vibeName,
 //                    addressGu, pageable, sortBy, minPrice, maxPrice,options));
@@ -133,12 +136,13 @@ public class StudioController {
     @GetMapping("/search/result")
     public ResponseEntity<Page<StudioDto>> getStudiosWithSearchResult(
             @RequestParam(required = false) String keyword,
-            Pageable pageable
+            Pageable pageable,
+            Authentication authentication
     ){
         try {
             //검색어 저장
             studioService.saveKeyword(keyword);
-            return ResponseEntity.ok(studioService.getStudiosWithSearch(keyword, pageable));
+            return ResponseEntity.ok(studioService.getStudiosWithSearch(keyword, pageable, authentication));
         }catch (ConfigDataResourceNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }catch (IllegalArgumentException e){

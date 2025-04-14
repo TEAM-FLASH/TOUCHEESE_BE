@@ -17,6 +17,7 @@ import com.team4.toucheese.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,7 +40,11 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public void addBookMark(Long userId, Long studioId){
+    public BookmarkResultDto addBookMark(Authentication authentication, Long studioId){
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        String email = customUserDetails.getEmail();
+        UserEntity user = userRepository.findByEmail(email).orElseThrow();
+        Long userId = user.getId();
         BookMark bookMark = BookMark.builder()
                 .userId(userId)
                 .studioId(studioId)
@@ -55,10 +60,19 @@ public class UserService {
                 studioRepository.save(updatedStudio);
             }
         }
+        BookmarkResultDto bookmarkResultDto = new BookmarkResultDto();
+        bookmarkResultDto.setType("add");
+        bookmarkResultDto.setSuccess(true);
+        bookmarkResultDto.setMessage("북마크 추가에 성공했습니다");
+        return bookmarkResultDto;
     }
 
     @Transactional
-    public void deleteBookMark(Long userId, Long studioId){
+    public BookmarkResultDto deleteBookMark(Authentication authentication, Long studioId){
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        String email = customUserDetails.getEmail();
+        UserEntity user = userRepository.findByEmail(email).orElseThrow();
+        Long userId = user.getId();
         BookMark bookMark = (BookMark) bookMarkRepository.findByUserIdAndStudioId(userId, studioId).orElse(null);
         if (bookMark != null){
             Studio studio = studioRepository.findById(studioId).orElse(null);
@@ -69,6 +83,12 @@ public class UserService {
             studioRepository.save(updatedStudio);
             bookMarkRepository.delete(bookMark);
         }
+        BookmarkResultDto bookmarkResultDto = new BookmarkResultDto();
+        bookmarkResultDto.setType("delete");
+        bookmarkResultDto.setSuccess(true);
+        bookmarkResultDto.setMessage("북마크 삭제에 성공했습니다");
+
+        return bookmarkResultDto;
     }
 
     public boolean checkBookMark(Long userId, Long studioId){

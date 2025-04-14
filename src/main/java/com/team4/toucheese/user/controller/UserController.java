@@ -16,22 +16,28 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("/bookmark/{userId}/{studioId}")
-    public ResponseEntity<String> addBookMark(@PathVariable("userId") Long userId, @PathVariable("studioId") Long studioId){
+    @PostMapping("/bookmark/{studioId}")
+    public ResponseEntity<BookmarkResultDto> addBookMark(Authentication authentication, @PathVariable("studioId") Long studioId){
         try{
-            userService.addBookMark(userId, studioId);
-            return ResponseEntity.ok("success");
+            return ResponseEntity.ok(userService.addBookMark(authentication, studioId));
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            BookmarkResultDto bookmarkResultDto = new BookmarkResultDto();
+            bookmarkResultDto.setType("add");
+            bookmarkResultDto.setMessage(e.getMessage());
+            bookmarkResultDto.setSuccess(false);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(bookmarkResultDto);
         }
     }
-    @DeleteMapping("/bookmark/{userId}/{studioId}")
-    public ResponseEntity<String> deleteBookMark(@PathVariable("userId") Long userId, @PathVariable("studioId") Long studioId){
+    @DeleteMapping("/bookmark/{studioId}")
+    public ResponseEntity<BookmarkResultDto> deleteBookMark(Authentication authentication, @PathVariable("studioId") Long studioId){
         try{
-            userService.deleteBookMark(userId, studioId);
-            return ResponseEntity.ok("success");
+            return ResponseEntity.ok(userService.deleteBookMark(authentication, studioId));
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            BookmarkResultDto bookmarkResultDto = new BookmarkResultDto();
+            bookmarkResultDto.setType("delete");
+            bookmarkResultDto.setMessage(e.getMessage());
+            bookmarkResultDto.setSuccess(false);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(bookmarkResultDto);
         }
     }
 

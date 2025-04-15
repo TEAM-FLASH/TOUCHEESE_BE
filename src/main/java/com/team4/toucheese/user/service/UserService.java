@@ -1,6 +1,7 @@
 package com.team4.toucheese.user.service;
 
 import com.team4.toucheese.auth.dto.CustomUserDetails;
+import com.team4.toucheese.studio.dto.StudioDto;
 import com.team4.toucheese.studio.entity.CancelReservation;
 import com.team4.toucheese.studio.entity.CompleteReservation;
 import com.team4.toucheese.studio.entity.Reservation;
@@ -277,6 +278,36 @@ public class UserService {
         changePasswordResultDTO.setMessage("Change Password Success");
         changePasswordResultDTO.setSuccess(Boolean.TRUE);
         return changePasswordResultDTO;
+    }
+
+    public List<StudioDto> getMyBookmark(Authentication authentication) {
+        // 인증된 유저 정보 확인
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+        // 이메일로 사용자 조회
+        UserEntity user = userRepository.findByEmail(userDetails.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("User not found."));
+
+        // 북마크한 스튜디오 목록 조회
+        List<BookMark> bookMarks = bookMarkRepository.findAllByUserId(user.getId());
+
+        // 북마크가 없을 경우, 빈 리스트 반환
+        if (bookMarks.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // 북마크에서 스튜디오 ID 추출 (stream 사용)
+        List<Long> studioIds = bookMarks.stream()
+                .map(BookMark::getStudioId)
+                .toList();
+
+        // 스튜디오 ID 리스트로 스튜디오 데이터 한번에 조회
+        List<Studio> studios = studioRepository.findAllById(studioIds);
+
+        // Studio -> StudioDto 변환
+        return studios.stream()
+                .map(StudioDto::fromEntity)
+                .toList();
     }
 
 }

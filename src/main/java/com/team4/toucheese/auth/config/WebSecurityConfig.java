@@ -51,6 +51,7 @@ public class WebSecurityConfig {
                                 "/auth/my-profile",
                                 "/auth/logout",
                                 "/user/mypage",
+                                "/user/bookmark",
                                 "/user/bookmark/**",
                                 "/user/mypage/**",
                                 "/review/file"

@@ -112,4 +112,13 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(changePhoneResultDTO);
         }
     }
+
+    @GetMapping("/bookmark")
+    public ResponseEntity<?> getMyBookmark(Authentication authentication){
+        try{
+            return ResponseEntity.ok(userService.getMyBookmark(authentication));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 }

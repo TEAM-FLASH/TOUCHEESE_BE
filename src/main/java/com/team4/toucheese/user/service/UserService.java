@@ -151,7 +151,7 @@ public class UserService {
         }
         for (Reservation reservation : reservations){
             MyInfoDto dto = new MyInfoDto();
-            if (reservation.getStatus().toString().equals("RESERVED")){
+            if (reservation.getStatus().toString().equals("RESERVED") || reservation.getStatus().toString().equals("WAITING")){
                 dto.setReservationId(reservation.getId());
                 dto.setStatus(reservation.getStatus().toString());
                 dto.setStudioId(reservation.getStudio().getId());

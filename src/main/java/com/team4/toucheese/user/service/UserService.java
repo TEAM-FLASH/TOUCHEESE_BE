@@ -306,7 +306,11 @@ public class UserService {
 
         // Studio -> StudioDto 변환
         return studios.stream()
-                .map(StudioDto::fromEntity)
+                .map(studio -> {
+                    StudioDto dto = StudioDto.fromEntity(studio);
+                    dto.setBookmark(true);
+                    return dto;
+                })
                 .toList();
     }
 

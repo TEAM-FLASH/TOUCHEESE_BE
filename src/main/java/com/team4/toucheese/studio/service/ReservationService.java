@@ -348,6 +348,20 @@ public class ReservationService {
         return cancelReservationResultDto;
     }
 
+    public ReservedReservationDto reservedReservation(Long reservationId){
+        Optional<Reservation> reservation = reservationRepository.findById(reservationId);
+        if (reservation.isEmpty()) {
+            throw new IllegalArgumentException("Reservation not found.");
+        }
+        Reservation reserveReservation = reservation.get().toBuilder().status(Reservation.ReservationStatus.valueOf("RESERVED")).build();
+        reservationRepository.save(reserveReservation);
+
+        ReservedReservationDto reservedReservationDto = new ReservedReservationDto();
+        reservedReservationDto.setMessage("예약 확정 완료");
+        reservedReservationDto.setSuccess(true);
+        return reservedReservationDto;
+    }
+
     public ReservationCheckDto checkReservation(Long reservationId){
         Optional<Reservation> reservation = reservationRepository.findById(reservationId);
         ReservationCheckDto reservationCheckDto = new ReservationCheckDto();

@@ -1,10 +1,7 @@
 package com.team4.toucheese.studio.controller;
 
 import com.team4.toucheese.auth.dto.CustomUserDetails;
-import com.team4.toucheese.studio.dto.AvailableTimeResultDto;
-import com.team4.toucheese.studio.dto.CancelReservationResultDto;
-import com.team4.toucheese.studio.dto.ReservationCheckRequest;
-import com.team4.toucheese.studio.dto.ReservationRequest;
+import com.team4.toucheese.studio.dto.*;
 import com.team4.toucheese.studio.entity.Reservation;
 import com.team4.toucheese.studio.service.ReservationService;
 import lombok.RequiredArgsConstructor;
@@ -85,6 +82,18 @@ public class ReservationController {
             return ResponseEntity.ok(reservationService.cancelReservation(reservationId));
         }catch (Exception e){
             CancelReservationResultDto result = new CancelReservationResultDto();
+            result.setSuccess(false);
+            result.setMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
+        }
+    }
+
+    @PostMapping("/reserve/{reservationId}")
+    public ResponseEntity<?> reserveReservation(@PathVariable("reservationId") Long reservationId){
+        try{
+            return ResponseEntity.ok(reservationService.reservedReservation(reservationId));
+        }catch (Exception e){
+            ReservedReservationDto result = new ReservedReservationDto();
             result.setSuccess(false);
             result.setMessage(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);

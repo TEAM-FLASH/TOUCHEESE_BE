@@ -26,6 +26,7 @@ public class StudioDetailDto {
     private Double latitude;    //위도
     private Double longitude;   //경도
     private String subVibe;   //서브분위기
+    private boolean bookmarked;
 
     private List<PortfolioDto> portfolios;
     private List<String> options;

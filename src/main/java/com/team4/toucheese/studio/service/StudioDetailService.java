@@ -1,5 +1,6 @@
 package com.team4.toucheese.studio.service;
 
+import com.team4.toucheese.auth.dto.CustomUserDetails;
 import com.team4.toucheese.review.dto.ReviewDto;
 import com.team4.toucheese.review.service.ReviewService;
 import com.team4.toucheese.studio.dto.*;
@@ -10,6 +11,9 @@ import com.team4.toucheese.studio.entity.StudioOpeningHours;
 import com.team4.toucheese.studio.repository.MenuRepository;
 import com.team4.toucheese.studio.repository.PortfolioRepository;
 import com.team4.toucheese.studio.repository.StudioRepository;
+import com.team4.toucheese.user.entity.UserEntity;
+import com.team4.toucheese.user.repository.BookMarkRepository;
+import com.team4.toucheese.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -37,9 +42,11 @@ public class StudioDetailService {
     private final MenuRepository menuRepository;
     private final ReviewService reviewService;
     private final PortfolioService portfolioService;
+    private final UserRepository userRepository;
+    private final BookMarkRepository bookMarkRepository;
 
     //스튜디오 하나 보여주기
-    public StudioDetailDto selectOneStudio(long studioId){
+    public StudioDetailDto selectOneStudio(long studioId, Authentication authentication) {
         Studio studio = studioRepository.findById(studioId).orElse(null);
         if (studio != null) {
             StudioDetailDto studioDetailDto = StudioDetailDto.fromEntity(studio);
@@ -51,6 +58,14 @@ public class StudioDetailService {
             //영업중인지 확인
             studioDetailDto.setOpen(isStudioOpen(studioId, nowDate, nowTime));
 
+            if (authentication != null) {
+                CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+                String email = userDetails.getEmail();
+                UserEntity user = userRepository.findByEmail(email).orElse(null);
+                if (user != null) {
+                    studioDetailDto.setBookmarked(bookMarkRepository.existsByUserIdAndStudioId(user.getId(), studioId));
+                }
+            }
 
             return studioDetailDto;
 

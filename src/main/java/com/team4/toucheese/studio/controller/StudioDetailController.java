@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,10 +29,10 @@ public class StudioDetailController {
     private final ReviewImageService reviewImageService;
 
     @GetMapping("/{studioId}")
-    public ResponseEntity<StudioDetailDto> selectOne(@PathVariable("studioId") long studioId) {
+    public ResponseEntity<StudioDetailDto> selectOne(@PathVariable("studioId") long studioId, Authentication authentication) {
         try {
             studioDetailService.plusViewCount(studioId);
-            return ResponseEntity.ok(studioDetailService.selectOneStudio(studioId));
+            return ResponseEntity.ok(studioDetailService.selectOneStudio(studioId, authentication));
         }catch ( ConfigDataResourceNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }catch ( IllegalArgumentException e){

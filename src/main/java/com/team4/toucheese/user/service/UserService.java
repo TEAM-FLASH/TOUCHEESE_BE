@@ -6,10 +6,7 @@ import com.team4.toucheese.studio.entity.CancelReservation;
 import com.team4.toucheese.studio.entity.CompleteReservation;
 import com.team4.toucheese.studio.entity.Reservation;
 import com.team4.toucheese.studio.entity.Studio;
-import com.team4.toucheese.studio.repository.CancelReservationRepository;
-import com.team4.toucheese.studio.repository.CompleteReservationRepository;
-import com.team4.toucheese.studio.repository.ReservationRepository;
-import com.team4.toucheese.studio.repository.StudioRepository;
+import com.team4.toucheese.studio.repository.*;
 import com.team4.toucheese.user.dto.*;
 import com.team4.toucheese.user.entity.BookMark;
 import com.team4.toucheese.user.entity.UserEntity;
@@ -39,6 +36,7 @@ public class UserService {
     private final CompleteReservationRepository completeReservationRepository;
     private final CancelReservationRepository cancelReservationRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AdditionalOptionRepository additionalOptionRepository;
 
     @Transactional
     public BookmarkResultDto addBookMark(Authentication authentication, Long studioId){
@@ -125,6 +123,15 @@ public class UserService {
                 dto.setDate(reservation.getDate());
                 dto.setStartTime(reservation.getStart_time());
                 dto.setMenuImgUrl(reservation.getMenu().getMenuImages().get(0).getUrl());
+                if (!reservation.getAdditionalOptionIds().isEmpty()){
+                    dto.setAdditionalOptionIds(reservation.getAdditionalOptionIds());
+                    List<String> additionalOptionNames = new ArrayList<>();
+                    for (Long additionalOptionId : reservation.getAdditionalOptionIds()){
+                        String additionalOptionName = additionalOptionRepository.findById(additionalOptionId).get().getName();
+                        additionalOptionNames.add(additionalOptionName);
+                    }
+                    dto.setAdditionalOptionNames(additionalOptionNames);
+                }
                 dtos.add(dto);
             }
         }
@@ -161,6 +168,15 @@ public class UserService {
                 dto.setDate(reservation.getDate());
                 dto.setStartTime(reservation.getStart_time());
                 dto.setMenuImgUrl(reservation.getMenu().getMenuImages().get(0).getUrl());
+                if (!reservation.getAdditionalOptionIds().isEmpty()){
+                    dto.setAdditionalOptionIds(reservation.getAdditionalOptionIds());
+                    List<String> additionalOptionNames = new ArrayList<>();
+                    for (Long additionalOptionId : reservation.getAdditionalOptionIds()){
+                        String additionalOptionName = additionalOptionRepository.findById(additionalOptionId).get().getName();
+                        additionalOptionNames.add(additionalOptionName);
+                    }
+                    dto.setAdditionalOptionNames(additionalOptionNames);
+                }
                 dtos.add(dto);
             }
         }
@@ -197,6 +213,15 @@ public class UserService {
                 dto.setDate(reservation.getDate());
                 dto.setStartTime(reservation.getStart_time());
                 dto.setMenuImgUrl(reservation.getMenu().getMenuImages().get(0).getUrl());
+                if (!reservation.getAdditionalOptionIds().isEmpty()){
+                    dto.setAdditionalOptionIds(reservation.getAdditionalOptionIds());
+                    List<String> additionalOptionNames = new ArrayList<>();
+                    for (Long additionalOptionId : reservation.getAdditionalOptionIds()){
+                        String additionalOptionName = additionalOptionRepository.findById(additionalOptionId).get().getName();
+                        additionalOptionNames.add(additionalOptionName);
+                    }
+                    dto.setAdditionalOptionNames(additionalOptionNames);
+                }
                 dtos.add(dto);
             }
 
@@ -233,6 +258,15 @@ public class UserService {
                 dto.setMenuName(reservation.getMenu().getName());
                 dto.setDate(reservation.getDate());
                 dto.setStartTime(reservation.getStart_time());
+                if (!reservation.getAdditionalOptionIds().isEmpty()){
+                    dto.setAdditionalOptionIds(reservation.getAdditionalOptionIds());
+                    List<String> additionalOptionNames = new ArrayList<>();
+                    for (Long additionalOptionId : reservation.getAdditionalOptionIds()){
+                        String additionalOptionName = additionalOptionRepository.findById(additionalOptionId).get().getName();
+                        additionalOptionNames.add(additionalOptionName);
+                    }
+                    dto.setAdditionalOptionNames(additionalOptionNames);
+                }
                 dtos.add(dto);
             }
         }

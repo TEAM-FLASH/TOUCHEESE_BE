@@ -48,7 +48,7 @@ public class UserController {
             List<MyInfoDto> myInfoDtos = userService.getMyInfo(authentication);
             return ResponseEntity.ok(myInfoDtos);
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 

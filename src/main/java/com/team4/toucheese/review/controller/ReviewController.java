@@ -9,10 +9,7 @@ import org.springframework.boot.context.config.ConfigDataResourceNotFoundExcepti
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -24,9 +21,30 @@ public class ReviewController {
 
     private final S3Service s3Service;
 
-    @PostMapping("/file")
-    public ResponseEntity<?> uploadFile(@RequestBody CreateReviewRequestDto createReviewRequestDto, Authentication authentication) {
+    @PostMapping(value = "/file", consumes = "multipart/form-data")
+    public ResponseEntity<?> uploadFile(
+            @RequestPart
+            List<MultipartFile> multipartFiles,
+            @RequestPart
+            String content,
+            @RequestPart
+            Long menuId,
+            @RequestPart
+            Integer rating,
+            @RequestPart
+            Long studioId,
+            @RequestPart
+            List<Long> additionalOptionIds,
+            Authentication authentication
+    ) {
         try{
+            CreateReviewRequestDto createReviewRequestDto = new CreateReviewRequestDto();
+            createReviewRequestDto.setMultipartFiles(multipartFiles);
+            createReviewRequestDto.setContent(content);
+            createReviewRequestDto.setMenuId(menuId);
+            createReviewRequestDto.setRating(rating);
+            createReviewRequestDto.setStudioId(studioId);
+            createReviewRequestDto.setAdditionalOptionIds(additionalOptionIds);
             return ResponseEntity.ok(s3Service.uploadReview(createReviewRequestDto, authentication));
         }catch (ConfigDataResourceNotFoundException e){
             ErrorDto errorDto = new ErrorDto();

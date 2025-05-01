@@ -54,7 +54,7 @@ public class WebSecurityConfig {
                                 "/user/bookmark",
                                 "/user/bookmark/**",
                                 "/user/mypage/**",
-                                "/review/file"
+                                "/review/file/**"
                         ).authenticated()
                         .requestMatchers(
                                 "/auth/register",

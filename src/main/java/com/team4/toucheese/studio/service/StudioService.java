@@ -120,16 +120,19 @@ public class StudioService {
 
         if (date != null) {
             studios = studios.stream()
-                    .filter(studio -> {
-                        return isStudioAvailableByDate(studio, date);
-                    })
+                    //1. 날짜 기준으로 스튜디오 필터링
+                    .filter(studio ->
+                         isStudioAvailableByDate(studio, date))
+                    //2. 시간대의 조건에 따라 필터링
                     .filter(studio -> {
                         if (timeList != null && !timeList.isEmpty()) {
                             //시간대가 있는 경우
+                            //주어진 시간대 중 일부라도 예약 가능하면 필터링에 포함
                             return timeList.stream()
                                     .anyMatch(time -> isStudioAvailableByTime(studio, date, time, duration));
                         }else {
-                            //시간대가 없는 경우 가능 여부만 확인
+                            //시간대가 없는 경우
+                            //해당 날짜에 가능한 시간이 있는 스튜디오만 필터링
                             return hasAvailableTimesOnDate(studio, date, duration);
                         }
                     })
@@ -406,10 +409,13 @@ public class StudioService {
     //날짜에 따른 스튜디오 예약 가능 여부
     private boolean isStudioAvailableByDate(Studio studio, LocalDate date){
         //특별 휴무일 인지 확인
-        if (studio.getSpecialHolidays().isEmpty()) return false;
-        boolean isSpecialHoliday = studio.getSpecialHolidays().stream()
-                .anyMatch(studioSpecialHoliday -> studioSpecialHoliday.getDate().equals(date));
-        if (isSpecialHoliday) return false;
+        if (studio.getSpecialHolidays() != null && !studio.getSpecialHolidays().isEmpty()){
+            boolean isSpecialHoliday = studio.getSpecialHolidays().stream()
+                    .anyMatch(studioSpecialHoliday -> studioSpecialHoliday.getDate().equals(date));
+            if (isSpecialHoliday) {
+                return false;   //특별 휴무일이면 운영 불가
+            }
+        }
 
         //날짜가 스튜디오 휴무일인지
         //특정 주의 요일 휴무 확인
@@ -419,12 +425,14 @@ public class StudioService {
         //특정 월의 몇 번째 주인지
         int weekOfMonth = date.get(weekFields.weekOfMonth());
 //        System.out.println("weekOfMonth = " + weekOfMonth);
+
         //휴무확인
-        if (studio.getHolidays().isEmpty()) return false;
-        boolean isHoliday = studio.getHolidays().stream()
-                .anyMatch(studioHoliday -> studioHoliday.getWeekOfMonth() == weekOfMonth
-                        && studioHoliday.getDayOfWeek() == date.getDayOfWeek());
-        if (isHoliday) return false;
+        if (studio.getHolidays() !=null && !studio.getHolidays().isEmpty()){
+            boolean isHoliday = studio.getHolidays().stream()
+                    .anyMatch(studioHoliday -> studioHoliday.getWeekOfMonth() == weekOfMonth
+                            && studioHoliday.getDayOfWeek() == date.getDayOfWeek());
+            return !isHoliday;
+        }
 
         return true;
     }
@@ -435,6 +443,24 @@ public class StudioService {
 //        System.out.println("date = " + date);
         LocalTime endTime = time.plusMinutes(duration);
 
+        //스튜디오 운영시간 가죠오기
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        StudioOpeningHours openingHours = studio.getOpeningHours().stream()
+                .filter(hours -> hours.getDayOfWeek() == dayOfWeek)
+                .findFirst().orElse(null);
+
+        if (openingHours == null || openingHours.isClosed()) {
+            return false;  //운영시간이 없거나 휴무인 경우 예약 불가
+        }
+        LocalTime openingTime = openingHours.getOpenTime().toLocalTime();
+        LocalTime closingTime = openingHours.getCloseTime().toLocalTime();
+
+        //요청 시간이 운영 시간 범위 내에 있는지 확인
+        if (time.isBefore(openingTime) || endTime.isAfter(closingTime)){
+            // 요청 시간이 운영 시작 전이거나 종료 시간이 운영시간 이후인 경우
+            return false;
+        }
+
         //예약 충돌 여부 확인
         boolean hasConflict = studio.getReservations().stream()
                 .anyMatch(reservation -> {
@@ -443,8 +469,8 @@ public class StudioService {
                     LocalTime reservationEndTime = reservation.getEnd_time();
 
                     //예약 시간이 주어진 시간과 겹치는지 확인
-                    return reservation.getDate().equals(date) &&
-                            !(endTime.isBefore(reservationStartTime) || time.isAfter(reservationEndTime));
+                    return (reservation.getDate().equals(date) && !reservation.getStatus().equals(Reservation.ReservationStatus.CANCELED)) &&
+                            !(endTime.isBefore(reservationStartTime) || time.isAfter(reservationEndTime.minusNanos(1)));
                 });
 
         System.out.println("hasConflict = " + hasConflict);

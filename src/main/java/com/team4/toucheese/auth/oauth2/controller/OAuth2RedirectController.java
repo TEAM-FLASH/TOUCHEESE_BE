@@ -1,9 +1,11 @@
 package com.team4.toucheese.auth.oauth2.controller;
 
+import com.team4.toucheese.auth.dto.GoogleCode;
 import com.team4.toucheese.auth.dto.KakaoCode;
 import com.team4.toucheese.auth.dto.LoginSuccessDto;
 import com.team4.toucheese.auth.dto.RegisterDto;
 import com.team4.toucheese.auth.jwt.JwtUtil;
+import com.team4.toucheese.auth.oauth2.service.GoogleApi;
 import com.team4.toucheese.auth.oauth2.service.KakaoApi;
 import com.team4.toucheese.auth.service.JpaUserDetailsManager;
 import com.team4.toucheese.user.entity.UserEntity;
@@ -23,6 +25,7 @@ import java.util.Optional;
 public class OAuth2RedirectController {
 
     private final KakaoApi kakaoApi;
+    private final GoogleApi googleApi;
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
     private final JpaUserDetailsManager userDetailsManager;
@@ -78,4 +81,54 @@ public class OAuth2RedirectController {
         return ResponseEntity.status(500).body("로그인이 완료되지 못했습니다 다시 시도해주세요");
     }
 
+    @GetMapping("/login/oauth2/code/google")
+    public String googleCallback(@RequestParam("code") String code, HttpServletRequest request) throws IOException {
+        return code;
+    }
+
+    @PostMapping("/user/auth/google/callback")
+    public ResponseEntity<?> redirectGoogle(
+            @RequestBody GoogleCode googleCode
+    ){
+        try{
+            String code = googleCode.getCode();
+            String accessToken = googleApi.getAccessToken(code);
+
+            //사용자 정보를 받는다
+            Map<String, Object> userInfo = googleApi.getUserInfo(accessToken);
+
+            //회원가입이 되어있지 않으면 회원가입
+            if (!userRepository.existsByEmail(userInfo.get("email").toString())) {
+                RegisterDto registerDto = new RegisterDto();
+                registerDto.setStatus("가입되지 않은 이메일 입니다");
+                registerDto.setR_email(userInfo.get("email").toString());
+//                registerDto.setR_username(userInfo.get("name").toString());
+                registerDto.setR_registration("google");
+                registerDto.setR_password(googleApi.makePassword());
+                return ResponseEntity.status(404).body(registerDto);
+            } else {
+                //가입이 되어 있다면 회원 정보 불러오기
+                Optional<UserEntity> user = userRepository.findByEmail(userInfo.get("email").toString());
+
+                //회원가입이 <google>로되어있으면 토큰 발행 후 로그인
+                if (userRepository.existsByEmail(user.get().getEmail()) && user.get().getRegistration().equals("google")) {
+                    String token = jwtUtil.generateToken(user.get().getEmail());
+                    LoginSuccessDto dto = new LoginSuccessDto();
+                    dto.setAccessToken(token);
+                    dto.setPhone(user.get().getPhone());
+                    dto.setEmail(user.get().getEmail());
+                    dto.setUsername(user.get().getUsername());
+                    dto.setRegistration(user.get().getRegistration());
+                    dto.setUser_id(user.get().getId());
+                    return ResponseEntity.ok(dto);
+                } else if (userRepository.existsByEmail(user.get().getEmail()) && !user.get().getRegistration().equals("google")) {
+                    return ResponseEntity.status(401).body(String.format("%s로 가입된 이메일 입니다", user.get().getRegistration()));
+                }
+            }
+        }catch (Exception e){
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+        return ResponseEntity.status(500).body("로그인이 완료되지 못했습니다 다시 시도해주세요");
+
+    }
 }

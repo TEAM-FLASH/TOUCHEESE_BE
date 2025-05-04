@@ -42,7 +42,9 @@ public class WebSecurityConfig {
                                 "/auth/**",
                                 "/token/**",
                                 "/user/auth/kakao/callback",
+                                "/user/auth/google/callback",
                                 "/login/oauth2/code/kakao",
+                                "/login/oauth2/code/google",
                                 "/reservation/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"

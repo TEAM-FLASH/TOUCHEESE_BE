@@ -53,6 +53,9 @@ public class Reservation {
     @Enumerated(EnumType.STRING)
     private ReservationStatus status;
 
+    private String cancelReason;
+    private String cancelReasonDetail;
+
 
     public enum ReservationStatus {
         RESERVED,

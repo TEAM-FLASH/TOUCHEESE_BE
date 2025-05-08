@@ -309,7 +309,7 @@ public class ReservationService {
     }
     //예약 취소
     @Transactional
-    public CancelReservationResultDto cancelReservation(Long reservationId){
+    public CancelReservationResultDto cancelReservation(Long reservationId, CancelReasonDto cancelReasonDto){
         //reservation 테이블의 데이터를 cancelReservation 테이블로 옮긴다.
         //1. Reservation 찾기
         Optional<Reservation> reservation = reservationRepository.findById(reservationId);
@@ -317,7 +317,10 @@ public class ReservationService {
         if (reservation.isEmpty()) {
             throw new IllegalArgumentException("Reservation not found.");
         }
-        Reservation updatedReservation = reservation.get().toBuilder().status(Reservation.ReservationStatus.valueOf("CANCELED")).build();
+        Reservation updatedReservation = reservation.get().toBuilder().status(Reservation.ReservationStatus.valueOf("CANCELED"))
+                .cancelReason(cancelReasonDto.getReason())
+                .cancelReasonDetail(cancelReasonDto.getDetailReason())
+                .build();
         reservationRepository.save(updatedReservation);
 
 //        CancelReservation cancelReservation = CancelReservation.builder()

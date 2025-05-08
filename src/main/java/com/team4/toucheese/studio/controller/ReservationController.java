@@ -77,9 +77,10 @@ public class ReservationController {
     }
 
     @PostMapping("/cancel/{reservationId}")
-    public ResponseEntity<?> cancelReservation(@PathVariable("reservationId") Long reservationId){
+    public ResponseEntity<?> cancelReservation(@PathVariable("reservationId") Long reservationId,
+                                               @RequestBody CancelReasonDto cancelReasonDto){
         try{
-            return ResponseEntity.ok(reservationService.cancelReservation(reservationId));
+            return ResponseEntity.ok(reservationService.cancelReservation(reservationId, cancelReasonDto));
         }catch (Exception e){
             CancelReservationResultDto result = new CancelReservationResultDto();
             result.setSuccess(false);

@@ -258,6 +258,7 @@ public class UserService {
                 dto.setMenuName(reservation.getMenu().getName());
                 dto.setDate(reservation.getDate());
                 dto.setStartTime(reservation.getStart_time());
+                dto.setMenuImgUrl(reservation.getMenu().getMenuImages().get(0).getUrl());
                 if (!reservation.getAdditionalOptionIds().isEmpty()){
                     dto.setAdditionalOptionIds(reservation.getAdditionalOptionIds());
                     List<String> additionalOptionNames = new ArrayList<>();

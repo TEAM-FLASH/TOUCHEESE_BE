@@ -55,6 +55,7 @@ public class Reservation {
 
     private String cancelReason;
     private String cancelReasonDetail;
+    private LocalDateTime cancelAt;
 
 
     public enum ReservationStatus {

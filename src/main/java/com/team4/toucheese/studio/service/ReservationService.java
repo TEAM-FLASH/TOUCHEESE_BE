@@ -320,6 +320,7 @@ public class ReservationService {
         Reservation updatedReservation = reservation.get().toBuilder().status(Reservation.ReservationStatus.valueOf("CANCELED"))
                 .cancelReason(cancelReasonDto.getReason())
                 .cancelReasonDetail(cancelReasonDto.getDetailReason())
+                .cancelAt(LocalDateTime.now())
                 .build();
         reservationRepository.save(updatedReservation);
 
@@ -408,6 +409,7 @@ public class ReservationService {
         reservationCheckDto.setBasicPrice(reservation.get().getMenu().getPrice());
         reservationCheckDto.setPaymentMethod(reservation.get().getPaymentMethod());
         reservationCheckDto.setMenuImageUrl(reservation.get().getMenu().getMenuImages().get(0).getUrl());
+
 
         return reservationCheckDto;
     }

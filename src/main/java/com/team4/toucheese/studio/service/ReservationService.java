@@ -410,6 +410,10 @@ public class ReservationService {
         reservationCheckDto.setPaymentMethod(reservation.get().getPaymentMethod());
         reservationCheckDto.setMenuImageUrl(reservation.get().getMenu().getMenuImages().get(0).getUrl());
 
+        //취소 옵션
+        reservationCheckDto.setCancelReason(reservation.get().getCancelReason());
+        reservationCheckDto.setCancelReasonDetail(reservation.get().getCancelReasonDetail());
+        reservationCheckDto.setCancelDateTime(reservation.get().getCancelAt());
 
         return reservationCheckDto;
     }

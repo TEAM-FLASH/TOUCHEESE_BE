@@ -3,6 +3,7 @@ package com.team4.toucheese.studio.dto;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -32,4 +33,7 @@ public class ReservationCheckDto {
     private Integer basicPrice;
     private String paymentMethod;
     private String menuImageUrl;
+    private String cancelReason;
+    private String cancelReasonDetail;
+    private LocalDateTime cancelDateTime;
 }

@@ -279,15 +279,16 @@ public class UserService {
     //예약 취소 신청
 
 
-    //핸드폰 번호 변경
+    //핸드폰 번호 및 이름 변경
     @Transactional
-    public ChangePhoneResultDTO changePhone(Authentication authentication, String phone){
+    public ChangePhoneResultDTO changePhone(Authentication authentication, ChangePhoneRequest changePhoneRequest){
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         Optional<UserEntity> user = userRepository.findByEmail(userDetails.getEmail());
         if (user.isEmpty()){
             throw new IllegalArgumentException("user is null");
         }
-        UserEntity userEntity = user.get().toBuilder().phone(phone).build();
+        UserEntity userEntity = user.get().toBuilder().phone(changePhoneRequest.getNewPhone())
+                .username(changePhoneRequest.getNewName()).build();
         userRepository.save(userEntity);
 
         ChangePhoneResultDTO changePhoneResultDTO = new ChangePhoneResultDTO();

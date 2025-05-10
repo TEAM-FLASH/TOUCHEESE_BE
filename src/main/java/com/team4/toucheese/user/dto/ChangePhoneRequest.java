@@ -9,4 +9,5 @@ import lombok.*;
 @AllArgsConstructor
 public class ChangePhoneRequest {
     private String newPhone;
+    private String newName;
 }

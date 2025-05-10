@@ -104,7 +104,7 @@ public class UserController {
                                          @RequestBody
                                          ChangePhoneRequest changePhoneRequest){
         try{
-            return ResponseEntity.ok(userService.changePhone(authentication, changePhoneRequest.getNewPhone()));
+            return ResponseEntity.ok(userService.changePhone(authentication, changePhoneRequest));
         }catch (Exception e){
             ChangePhoneResultDTO changePhoneResultDTO = new ChangePhoneResultDTO();
             changePhoneResultDTO.setSuccess(false);

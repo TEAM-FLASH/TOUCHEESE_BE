@@ -66,7 +66,7 @@ public class UserController {
     @GetMapping("/mypage/reservation/completed")
     public ResponseEntity<?> myReservationCompleted(Authentication authentication){
         try{
-            List<MyInfoDto> myCompletedInfos = userService.getMyComplete(authentication);
+            List<MyCompletedInfo> myCompletedInfos = userService.getMyComplete(authentication);
             return ResponseEntity.ok(myCompletedInfos);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findByMenu_Studio_Id(Long menuStudioId);
@@ -13,6 +14,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findByMenu_Id(Long menuId);
 
     Page<Review> findByMenu_Id(Long menuId, Pageable pageable);
+
+    Optional<Review> findByReservationId(Long reservationId);
 
 //    List<Review> findByMenu_Studio_Id(Long menuStudioId);
 

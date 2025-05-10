@@ -1,6 +1,8 @@
 package com.team4.toucheese.user.service;
 
 import com.team4.toucheese.auth.dto.CustomUserDetails;
+import com.team4.toucheese.review.entity.Review;
+import com.team4.toucheese.review.repository.ReviewRepository;
 import com.team4.toucheese.studio.dto.StudioDto;
 import com.team4.toucheese.studio.entity.CancelReservation;
 import com.team4.toucheese.studio.entity.CompleteReservation;
@@ -37,6 +39,7 @@ public class UserService {
     private final CancelReservationRepository cancelReservationRepository;
     private final PasswordEncoder passwordEncoder;
     private final AdditionalOptionRepository additionalOptionRepository;
+    private final ReviewRepository reviewRepository;
 
     @Transactional
     public BookmarkResultDto addBookMark(Authentication authentication, Long studioId){
@@ -184,7 +187,7 @@ public class UserService {
     }
 
     //이용완료 목록
-    public List<MyInfoDto> getMyComplete(Authentication authentication){
+    public List<MyCompletedInfo> getMyComplete(Authentication authentication){
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String email = userDetails.getEmail();
 
@@ -197,12 +200,12 @@ public class UserService {
         }
         Long userId = user.get().getId();
         List<Reservation> reservations = reservationRepository.findByUser(userId);
-        List<MyInfoDto> dtos = new ArrayList<>();
+        List<MyCompletedInfo> dtos = new ArrayList<>();
         if (reservations.isEmpty()){
             return null;
         }
         for (Reservation reservation : reservations){
-            MyInfoDto dto = new MyInfoDto();
+            MyCompletedInfo dto = new MyCompletedInfo();
             if (reservation.getStatus().toString().equals("COMPLETED")){
                 dto.setReservationId(reservation.getId());
                 dto.setStatus(reservation.getStatus().toString());
@@ -221,6 +224,11 @@ public class UserService {
                         additionalOptionNames.add(additionalOptionName);
                     }
                     dto.setAdditionalOptionNames(additionalOptionNames);
+                }
+                if (reservation.isExistReview()){
+                    dto.setReview(true);
+                    Review review = reviewRepository.findByReservationId(reservation.getId()).get();
+                    dto.setReviewRating(review.getRating());
                 }
                 dtos.add(dto);
             }

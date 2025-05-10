@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -11,15 +12,18 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MyCompletedInfo {
-    private Long completedReservationId;
+    private Long reservationId;
     private Long studioId;
     private String studioName;
     private Long menuId;
     private String menuName;
+    private List<Long> additionalOptionIds;
+    private List<String> additionalOptionNames;
     private LocalDate date;
     private LocalTime startTime;
     private String menuImgUrl;
     private String status;
-    private boolean existReview;
-    private Integer reviewScore;
+
+    private boolean review;
+    private Integer reviewRating;
 }

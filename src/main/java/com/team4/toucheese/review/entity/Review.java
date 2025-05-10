@@ -47,4 +47,7 @@ public class Review {
     @UpdateTimestamp
     private LocalDateTime updated_at;
 
+    @Column(unique = true)
+    private Long reservationId;
+
 }

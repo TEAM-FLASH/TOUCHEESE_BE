@@ -17,4 +17,5 @@ public class CreateReviewRequestDto {
     private Integer rating;
     private Long studioId;
     private List<Long> additionalOptionIds;
+    private Long reservationId;
 }

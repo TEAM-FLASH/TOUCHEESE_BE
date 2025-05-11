@@ -35,6 +35,8 @@ public class ReviewController {
             Long studioId,
             @RequestPart
             List<Long> additionalOptionIds,
+            @RequestPart
+            Long reservationId,
             Authentication authentication
     ) {
         try{
@@ -45,6 +47,7 @@ public class ReviewController {
             createReviewRequestDto.setRating(rating);
             createReviewRequestDto.setStudioId(studioId);
             createReviewRequestDto.setAdditionalOptionIds(additionalOptionIds);
+            createReviewRequestDto.setReservationId(reservationId);
             return ResponseEntity.ok(s3Service.uploadReview(createReviewRequestDto, authentication));
         }catch (ConfigDataResourceNotFoundException e){
             ErrorDto errorDto = new ErrorDto();

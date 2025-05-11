@@ -15,9 +15,11 @@ import com.team4.toucheese.review.repository.ReviewImageRepository;
 import com.team4.toucheese.review.repository.ReviewRepository;
 import com.team4.toucheese.studio.entity.AdditionalOption;
 import com.team4.toucheese.studio.entity.Menu;
+import com.team4.toucheese.studio.entity.Reservation;
 import com.team4.toucheese.studio.entity.Studio;
 import com.team4.toucheese.studio.repository.AdditionalOptionRepository;
 import com.team4.toucheese.studio.repository.MenuRepository;
+import com.team4.toucheese.studio.repository.ReservationRepository;
 import com.team4.toucheese.studio.repository.StudioRepository;
 import com.team4.toucheese.user.entity.UserEntity;
 import com.team4.toucheese.user.repository.UserRepository;
@@ -49,6 +51,7 @@ public class S3Service {
     private final ReviewImageRepository reviewImageRepository;
     private final StudioRepository studioRepository;
     private final AdditionalOptionRepository additionalOptionRepository;
+    private final ReservationRepository reservationRepository;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
@@ -76,6 +79,10 @@ public class S3Service {
         if (createReviewRequestDto.getMultipartFiles() != null && !createReviewRequestDto.getMultipartFiles().isEmpty()) {
             List<String> fileUrlList = uploadFilesToS3(createReviewRequestDto.getMultipartFiles(), review);
         }
+
+        Reservation reservation = reservationRepository.findById(createReviewRequestDto.getReservationId()).get();
+        reservation.toBuilder().existReview(true).build();
+        reservationRepository.save(reservation);
 
         // Save review
         reviewRepository.save(review);
@@ -115,6 +122,7 @@ public class S3Service {
                 .studio(studio)
                 .additionalOptions(additionalOptions)
                 .rating(requestDto.getRating())
+                .reservationId(requestDto.getReservationId())
                 .build();
     }
 

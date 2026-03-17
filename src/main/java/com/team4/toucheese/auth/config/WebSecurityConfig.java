@@ -47,7 +47,8 @@ public class WebSecurityConfig {
                                 "/login/oauth2/code/google",
                                 "/reservation/**",
                                 "/swagger-ui/**",
-                                "/v3/api-docs/**"
+                                "/v3/api-docs/**",
+                                "/error"
                         ).permitAll()
                         .requestMatchers(
                                 "/auth/my-profile",
@@ -89,7 +90,7 @@ public class WebSecurityConfig {
 
     @Bean public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://toucheese-flash.store", "https://www.toucheese-flash.store", "https://www.toucheeseapi.shop"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://toucheese-flash.shop", "https://www.toucheese-flash.shop", "https://www.toucheeseapi.shop"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
